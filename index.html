@@ -34,16 +34,16 @@
     /* SVG transforms must be relative to each shape, not the whole drawing */
     .intro svg.anim .fillup { transform-box: fill-box; transform-origin: 50% 100%; }
 
-    /* Slide 3: the journey of the water, one 9-second loop */
-    .journey .truck { animation: j-truck 9s ease-in-out infinite; }
-    .journey .truckwater { animation: j-truckwater 9s ease-in-out infinite; }
-    .journey .pipe { animation: j-pipe 9s linear infinite; }
-    .journey .hose { animation: j-hose 9s linear infinite; }
-    .journey .tankwater { animation: j-tankwater 9s ease-in-out infinite; }
-    .journey .cap1 { animation: j-cap1 9s linear infinite; }
-    .journey .cap2 { animation: j-cap2 9s linear infinite; }
-    .journey .cap3 { animation: j-cap3 9s linear infinite; }
-    .journey .q { animation: j-q 9s linear infinite; }
+    /* Slide 3: the journey of the water, one 14-second loop */
+    .journey .truck { animation: j-truck 14s ease-in-out infinite; }
+    .journey .truckwater { animation: j-truckwater 14s ease-in-out infinite; }
+    .journey .pipe { animation: j-pipe 14s linear infinite; }
+    .journey .hose { animation: j-hose 14s linear infinite; }
+    .journey .tankwater { animation: j-tankwater 14s ease-in-out infinite; }
+    .journey .cap1 { animation: j-cap1 14s linear infinite; }
+    .journey .cap2 { animation: j-cap2 14s linear infinite; }
+    .journey .cap3 { animation: j-cap3 14s linear infinite; }
+    .journey .q { animation: j-q 14s linear infinite; }
     @keyframes j-truck { 0%, 30% { transform: translateX(0); } 52%, 100% { transform: translateX(290px); } }
     @keyframes j-truckwater { 0%, 6% { transform: scaleY(0); } 26%, 60% { transform: scaleY(1); } 78%, 100% { transform: scaleY(.15); } }
     @keyframes j-pipe { 0%, 5% { opacity: 0; } 8%, 26% { opacity: 1; } 30%, 100% { opacity: 0; } }
@@ -54,31 +54,32 @@
     @keyframes j-cap3 { 0%, 56% { opacity: 0; } 60%, 84% { opacity: 1; } 88%, 100% { opacity: 0; } }
     @keyframes j-q { 0%, 84% { opacity: 0; } 88%, 100% { opacity: 1; } }
 
-    /* Slide 4: how RemoteWater works, one 14-second loop */
-    .how .tag { animation: h-tag 14s linear infinite; }
-    .how .truck { animation: h-truck 14s ease-in-out infinite; }
-    .how .chk1 { animation: h-chk1 14s linear infinite; }
-    .how .chk2 { animation: h-chk2 14s linear infinite; }
-    .how .chk3 { animation: h-chk3 14s linear infinite; }
-    .how .lab { animation: h-lab 14s linear infinite; }
-    .how .bad { animation: h-bad 14s linear infinite; }
-    .how .bub { animation: h-bub 14s linear infinite; }
-    .how .c1 { animation: h-c1 14s linear infinite; }
-    .how .c2 { animation: h-c2 14s linear infinite; }
-    .how .c3 { animation: h-c3 14s linear infinite; }
-    .how .c4 { animation: h-c4 14s linear infinite; }
-    @keyframes h-tag { 0%, 4% { opacity: 0; transform: translateY(10px); } 9%, 95% { opacity: 1; transform: none; } 100% { opacity: 0; } }
-    @keyframes h-truck { 0%, 24% { transform: translateX(0); } 30%, 33% { transform: translateX(80px); } 38%, 41% { transform: translateX(200px); } 46%, 95% { transform: translateX(320px); } 100% { transform: translateX(320px); opacity: 0; } }
-    @keyframes h-chk1 { 0%, 30% { opacity: 0; transform: scale(.4); } 33%, 96% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
-    @keyframes h-chk2 { 0%, 38% { opacity: 0; transform: scale(.4); } 41%, 96% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
-    @keyframes h-chk3 { 0%, 46% { opacity: 0; transform: scale(.4); } 49%, 96% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
-    @keyframes h-lab { 0%, 54% { opacity: 0; transform: translateY(-10px); } 58%, 96% { opacity: 1; transform: none; } 100% { opacity: 0; } }
-    @keyframes h-bad { 0%, 70% { opacity: 0; } 74%, 96% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes h-bub { 0%, 74% { opacity: 0; transform: translateY(12px); } 78%, 96% { opacity: 1; transform: none; } 100% { opacity: 0; } }
-    @keyframes h-c1 { 0%, 2% { opacity: 0; } 5%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
-    @keyframes h-c2 { 0%, 24% { opacity: 0; } 27%, 52% { opacity: 1; } 55%, 100% { opacity: 0; } }
-    @keyframes h-c3 { 0%, 55% { opacity: 0; } 58%, 71% { opacity: 1; } 74%, 100% { opacity: 0; } }
-    @keyframes h-c4 { 0%, 74% { opacity: 0; } 77%, 97% { opacity: 1; } 100% { opacity: 0; } }
+    /* Slide 4: how RemoteWater works, plays once over 20 seconds and stays on the last frame */
+    .how .tag, .how .truck, .how .chk1, .how .chk2, .how .chk3, .how .lab, .how .bad, .how .bub, .how .c1, .how .c2, .how .c3, .how .c4 { animation-duration: 20s; animation-iteration-count: 1; animation-fill-mode: forwards; animation-timing-function: linear; }
+    .how .tag { animation-name: h-tag; }
+    .how .truck { animation-name: h-truck; animation-timing-function: ease-in-out; }
+    .how .chk1 { animation-name: h-chk1; }
+    .how .chk2 { animation-name: h-chk2; }
+    .how .chk3 { animation-name: h-chk3; }
+    .how .lab { animation-name: h-lab; }
+    .how .bad { animation-name: h-bad; }
+    .how .bub { animation-name: h-bub; }
+    .how .c1 { animation-name: h-c1; }
+    .how .c2 { animation-name: h-c2; }
+    .how .c3 { animation-name: h-c3; }
+    .how .c4 { animation-name: h-c4; }
+    @keyframes h-tag { 0%, 4% { opacity: 0; transform: translateY(10px); } 9%, 100% { opacity: 1; transform: none; } }
+    @keyframes h-truck { 0%, 24% { transform: translateX(0); } 30%, 33% { transform: translateX(80px); } 38%, 41% { transform: translateX(200px); } 46%, 100% { transform: translateX(320px); } }
+    @keyframes h-chk1 { 0%, 30% { opacity: 0; transform: scale(.4); } 33%, 100% { opacity: 1; transform: scale(1); } }
+    @keyframes h-chk2 { 0%, 38% { opacity: 0; transform: scale(.4); } 41%, 100% { opacity: 1; transform: scale(1); } }
+    @keyframes h-chk3 { 0%, 46% { opacity: 0; transform: scale(.4); } 49%, 100% { opacity: 1; transform: scale(1); } }
+    @keyframes h-lab { 0%, 54% { opacity: 0; transform: translateY(-10px); } 58%, 100% { opacity: 1; transform: none; } }
+    @keyframes h-bad { 0%, 70% { opacity: 0; } 74%, 100% { opacity: 1; } }
+    @keyframes h-bub { 0%, 74% { opacity: 0; transform: translateY(12px); } 78%, 100% { opacity: 1; transform: none; } }
+    @keyframes h-c1 { 0%, 2% { opacity: 0; } 5%, 100% { opacity: 1; } }
+    @keyframes h-c2 { 0%, 24% { opacity: 0; } 27%, 100% { opacity: 1; } }
+    @keyframes h-c3 { 0%, 55% { opacity: 0; } 58%, 100% { opacity: 1; } }
+    @keyframes h-c4 { 0%, 74% { opacity: 0; } 77%, 100% { opacity: 1; } }
     .intro svg.anim .pop { transform-box: fill-box; transform-origin: 50% 50%; }
 
     @keyframes up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
@@ -159,68 +160,69 @@
     <section class="slide">
       <p class="l sub" style="--i:0">How RemoteWater works</p>
       <h2 class="l" style="--i:1">Nothing new to install. Just remember which water went where.</h2>
-      <svg class="l anim how" style="--i:2" viewBox="0 0 900 320" aria-label="The plant records the day's reading, the driver taps Delivered at each home, the lab result comes back, and each home is told">
+      <svg class="l anim how" style="--i:2" viewBox="0 0 900 440" aria-label="The plant records the day's reading, the driver taps Delivered at each home, the lab result comes back, and each home is told">
         <defs>
           <linearGradient id="water2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3ff"/><stop offset="1" stop-color="#3b8fe0"/></linearGradient>
         </defs>
-        <rect x="0" y="232" width="900" height="6" fill="#3d5568"/>
-        <!-- plant -->
-        <g>
-          <rect x="30" y="150" width="120" height="82" rx="8" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
-          <rect x="48" y="106" width="20" height="44" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
-          <text x="90" y="262" fill="#d9e4ee" font-size="17" font-weight="700" text-anchor="middle">Plant</text>
-        </g>
-        <!-- today's reading tag -->
-        <g class="tag">
-          <rect x="14" y="52" width="200" height="44" rx="10" fill="#fff"/>
-          <text x="114" y="81" fill="#0b1d2a" font-size="20" font-weight="800" text-anchor="middle">Today: 0.8 mg/L</text>
-          <path d="M100 96 l 12 14 l 12 -14 z" fill="#fff"/>
-        </g>
-        <!-- four homes -->
-        <g id="homes">
-          <g transform="translate(420 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
-            <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
-            <g class="chk1 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
-            <g class="bub"><rect x="-6" y="48" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="71" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
-          <g transform="translate(540 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
-            <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
-            <g class="chk2 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
-            <g class="bub"><rect x="-6" y="48" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="71" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
-          <g transform="translate(660 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
-            <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
-            <g class="chk3 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
-            <g class="bub"><rect x="-6" y="48" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="71" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
-          <g transform="translate(780 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
-            <g class="bub"><rect x="-6" y="48" width="102" height="34" rx="17" fill="#6fe09a"/><text x="45" y="71" fill="#0b1d2a" font-size="17" font-weight="800" text-anchor="middle">✓ Safe</text></g></g>
-          <text x="645" y="262" fill="#d9e4ee" font-size="17" font-weight="700" text-anchor="middle">Homes</text>
-        </g>
-        <!-- truck -->
-        <g class="truck">
-          <rect x="175" y="176" width="120" height="50" rx="10" fill="#e8f1fa" stroke="#0b1d2a" stroke-width="3"/>
-          <rect x="181" y="182" width="108" height="38" rx="8" fill="url(#water2)"/>
-          <text x="235" y="207" fill="#0b1d2a" font-size="15" font-weight="800" text-anchor="middle">0.8</text>
-          <rect x="295" y="192" width="44" height="34" rx="6" fill="#ffbf00" stroke="#0b1d2a" stroke-width="3"/>
-          <circle cx="202" cy="230" r="11" fill="#0b1d2a"/><circle cx="318" cy="230" r="11" fill="#0b1d2a"/>
-        </g>
-        <!-- lab result -->
+        <!-- lab result, in its own band at the top -->
         <g class="lab">
-          <rect x="330" y="8" width="240" height="46" rx="23" fill="#ff6b5e"/>
-          <text x="450" y="38" fill="#fff" font-size="21" font-weight="900" text-anchor="middle">Lab result: FAIL</text>
+          <rect x="330" y="6" width="240" height="46" rx="23" fill="#ff6b5e"/>
+          <text x="450" y="36" fill="#fff" font-size="21" font-weight="900" text-anchor="middle">Lab result: FAIL</text>
         </g>
-        <!-- captions -->
-        <g class="c1"><text x="450" y="304" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">1. The plant writes down today's water reading, like it already does.</text></g>
-        <g class="c2"><text x="450" y="304" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">2. The driver taps Delivered at each door. No signal needed.</text></g>
-        <g class="c3"><text x="450" y="304" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">3. The lab calls. We know exactly which homes got that water.</text></g>
-        <g class="c4"><text x="450" y="304" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">4. Every home is told in minutes. The others are told they are fine.</text></g>
+        <g transform="translate(0 60)">
+          <rect x="0" y="232" width="900" height="6" fill="#3d5568"/>
+          <g>
+            <rect x="30" y="150" width="120" height="82" rx="8" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
+            <rect x="48" y="106" width="20" height="44" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
+            <text x="90" y="262" fill="#d9e4ee" font-size="17" font-weight="700" text-anchor="middle">Plant</text>
+          </g>
+          <g class="tag">
+            <rect x="14" y="52" width="200" height="44" rx="10" fill="#fff"/>
+            <text x="114" y="81" fill="#0b1d2a" font-size="20" font-weight="800" text-anchor="middle">Today: 0.8 mg/L</text>
+            <path d="M100 96 l 12 14 l 12 -14 z" fill="#fff"/>
+          </g>
+          <g>
+            <g transform="translate(420 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
+              <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
+              <g class="chk1 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+              <g class="bub"><rect x="-6" y="40" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="63" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
+            <g transform="translate(540 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
+              <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
+              <g class="chk2 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+              <g class="bub"><rect x="-6" y="40" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="63" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
+            <g transform="translate(660 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
+              <rect class="bad" x="8" y="160" width="74" height="72" fill="#b3261e" opacity="0"/><polygon class="bad" points="0,160 45,122 90,160" fill="#8f1d16" opacity="0"/>
+              <g class="chk3 pop"><circle cx="45" cy="100" r="18" fill="#fff"/><path d="M36 100 l 7 7 l 12 -14" fill="none" stroke="#1f7a3f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+              <g class="bub"><rect x="-6" y="40" width="102" height="34" rx="17" fill="#ff6b5e"/><text x="45" y="63" fill="#fff" font-size="17" font-weight="800" text-anchor="middle">⚠ Boil</text></g></g>
+            <g transform="translate(780 0)"><polygon points="0,160 45,122 90,160" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/><rect x="8" y="160" width="74" height="72" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/><rect x="36" y="192" width="18" height="40" fill="#0b1d2a"/>
+              
+              
+              <g class="bub"><rect x="-6" y="40" width="102" height="34" rx="17" fill="#6fe09a"/><text x="45" y="63" fill="#0b1d2a" font-size="17" font-weight="800" text-anchor="middle">✓ Safe</text></g></g>
+            <text x="645" y="262" fill="#d9e4ee" font-size="17" font-weight="700" text-anchor="middle">Homes</text>
+          </g>
+          <!-- truck, drawn last so it drives in front of the homes -->
+          <g class="truck">
+            <rect x="175" y="176" width="120" height="50" rx="10" fill="#e8f1fa" stroke="#0b1d2a" stroke-width="3"/>
+            <rect x="181" y="182" width="108" height="38" rx="8" fill="url(#water2)"/>
+            <text x="235" y="207" fill="#0b1d2a" font-size="15" font-weight="800" text-anchor="middle">0.8</text>
+            <rect x="295" y="192" width="44" height="34" rx="6" fill="#ffbf00" stroke="#0b1d2a" stroke-width="3"/>
+            <circle cx="202" cy="230" r="11" fill="#0b1d2a"/><circle cx="318" cy="230" r="11" fill="#0b1d2a"/>
+          </g>
+        </g>
+        <!-- the four steps appear one after another and stay -->
+        <g class="c1"><text x="20" y="352" fill="#fff" font-size="21" font-weight="800">1. The plant writes down today's water reading, like it already does.</text></g>
+        <g class="c2"><text x="20" y="380" fill="#fff" font-size="21" font-weight="800">2. The driver taps Delivered at each door. No signal needed.</text></g>
+        <g class="c3"><text x="20" y="408" fill="#fff" font-size="21" font-weight="800">3. The lab calls. We know exactly which homes got that water.</text></g>
+        <g class="c4"><text x="20" y="436" fill="#fff" font-size="21" font-weight="800">4. Every home is told in minutes. The others are told they are fine.</text></g>
       </svg>
     </section>
 
     <section class="slide">
-      <p class="l sub" style="--i:0">Inukjuak, June 2026</p>
-      <h2 class="l" style="--i:1">A mother fills the kettle for her baby's bottle.</h2>
-      <p class="l" style="--i:2">She was told to boil everything. Nobody could tell her when it would end, or whether the bad water was ever in her tank at all.</p>
-      <p class="l" style="--i:3">With RemoteWater, her phone tells her. In minutes. In Inuktitut. Before the first bottle.</p>
-      <div class="l big green" style="--i:4">Every home deserves one answer.</div>
+      <h2 class="l" style="--i:0">Is the water in my tank safe?</h2>
+      <div class="l big green" style="--i:1">Every home gets its own answer.</div>
+      <p class="l" style="--i:2">In minutes. In Inuktitut. With no cell signal. With nothing to install.</p>
+      <p class="l" style="--i:3">Built from three things that already happen: the plant's morning reading, the driver's rounds, and the lab's phone call.</p>
+      <p class="l" style="--i:4">One file of homes per village. Ready for all 14 villages in Nunavik.</p>
       <div class="l" style="--i:5"><span class="cta">See it work →</span></div>
     </section>
   </div>
