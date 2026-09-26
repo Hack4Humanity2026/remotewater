@@ -25,9 +25,9 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
 | Screen | Who | What it does |
 |---|---|---|
 | **Overview** | everyone | Public zone map/list with recorded water-quality status and active notices. Select a zone to see delivered batches and evidence. |
-| **Plant** | treatment plant persona | Register a batch, choose a truck and zone, pass the chlorine/turbidity gate, and send a simulated sample to the lab. |
-| **Lab** | water lab persona | Receive simulated samples, record pass/fail and a short result note, and return the result to the batch record. |
-| **Truck** | truck driver persona | Start the simulated plant assignment, check the chlorine gate, deliver to the route, and queue delivery events for a simulated sync. |
+| **Plant** | treatment plant persona | Register a batch, choose a truck and zone, and send a simulated sample to the lab. |
+| **Lab** | water lab persona | Receive a simulated sample, record pass/fail, and open the external report placeholder. The lab result sets the batch status. |
+| **Truck** | truck driver persona | Choose an assigned batch, optionally upload a simulated test strip, start the route, deliver to the route, and queue events for a simulated sync. |
 | **Home** | resident | One large status card: safe / boil, with icon, colour and words in Inuktitut, English or French. When the water arrived, from which truck and batch, and an estimated safe-until date. Optional strip reading. |
 | **Notice channels** | communications persona | Simulate the same approved notice through Facebook, radio, SMS and household contact. The demo never contacts a real service. |
 | **Replay June 2026** | judges | The real incident, step by step, on the real map of Inukjuak: sample, failed result, trace, SMS, clean result, homes clearing one by one. |
@@ -42,8 +42,8 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
   smartphone, or Facebook account is needed to understand the workflow.
 - **Homes clear individually.** Once a clean sample closes the window, each home turns green the
   moment post-clean water reaches its tank, instead of waiting for a community-wide lifting date.
-- **A fill-time chlorine gate.** If low residual was the cause, a strip reading at the loading arm
-  would have flagged it days before the lab did. (The actual cause was not published.)
+- **A lab-owned status.** Plant and truck screens keep the handoff simple; pass/fail status is
+  recorded by the water lab and then shown on the public map.
 - **One demo, five personas.** The Persona dropdown moves judges between public, plant, lab, truck,
   resident and communications views without sign-in. Complex logic and communications are simulated.
 
