@@ -50,20 +50,21 @@ record that makes the next investigation faster. The replay shows the real numbe
 
 ## Real data, and what is simulated
 
-| Data | Status | Source |
-|---|---|---|
-| 467 buildings and 60 road segments in Inukjuak | real | OpenStreetMap via Overpass API, fetched 2026-09-26 (ODbL). The water treatment plant, health centre, schools and daycare are tagged. |
-| Population 1,821; 588 dwellings, 481 occupied; 96.4% Inuktitut mother tongue | real | Statistics Canada, 2021 Census Profile |
-| E. coli at the loading arm; advisory 2026-06-06; Montreal lab; "no timeline" | real | Nunatsiaq News, 2026-06-11 |
-| Three water trucks in Inukjuak | real | Nunatsiaq News, 2024-05-27 |
-| Sampling frequency, 0.3 mg/L chlorine minimum, immediate notification duty | real | RQEP (Q-2, r. 40) art. 8, 11, 35, 36 |
-| Inukjuak weekly sampling compliance 86 to 90% (2021 to 2025) | real | KRG Municipal Public Works report, Feb 2026 |
-| Household tanks are plastic, water stagnates for days, cleaned every two years | real | Institut nordique du Québec, 2024-06-26 |
-| Which buildings are homes | inferred | OSM tags nearly everything `building=yes`; unnamed buildings are treated as homes (422). |
-| Sample and result dates for the June 2026 incident | assumed | Not published. See `data/incident-2026-06.json`. |
-| The clean sample on 2026-06-09 | hypothetical | No lifting date was found. |
-| Delivery log, truck capacity (13,600 L), tank size (1,500 L), two-day cycle | simulated | Parameters in `data/config.json`. The driver app is what would produce the real log. |
-| Phone numbers, language preference per home | fictional | 555-01xx numbers. Languages randomised to match the census share. |
+| Data | Status | Source | Link |
+|---|---|---|---|
+| 467 buildings and 60 road segments in Inukjuak | real | OpenStreetMap via Overpass API, fetched 2026-09-26 (ODbL). The water treatment plant, health centre, schools and daycare are tagged. | [openstreetmap.org, Inukjuak](https://www.openstreetmap.org/#map=14/58.4550/-78.1030) · [Overpass API](https://overpass-api.de/) |
+| Population 1,821; 588 dwellings, 481 occupied; 96.4% Inuktitut mother tongue | real | Statistics Canada, 2021 Census Profile | [Census Profile, Inukjuak](https://www12.statcan.gc.ca/census-recensement/2021/dp-pd/prof/details/page.cfm?Lang=E&DGUIDlist=2021A00052499085) |
+| E. coli at the loading arm; advisory 2026-06-06; Montreal lab; "no timeline" | real | Nunatsiaq News, 2026-06-11 | [Inukjuak under boil-water advisory after E. coli detected at water plant](https://nunatsiaq.com/stories/article/inukjuak-under-boil-water-advisory-after-e-coli-detected-at-water-plant/) |
+| Three water trucks in Inukjuak | real | Nunatsiaq News, 2024-05-27 | [Nunavik villages lack reliable access to water, causing health centre and school closures](https://nunatsiaq.com/stories/article/nunavik-villages-lack-reliable-access-to-water-causing-health-centre-and-school-closures/) |
+| Sampling frequency, 0.3 mg/L chlorine minimum, immediate notification duty | real | RQEP (Q-2, r. 40) art. 8, 11, 35, 36 | [Règlement sur la qualité de l'eau potable](https://www.legisquebec.gouv.qc.ca/fr/document/rc/Q-2,%20r.%2040) |
+| Inukjuak weekly sampling compliance 86 to 90% (2021 to 2025) | real | KRG Municipal Public Works report, Feb 2026 | [MPW Activity Report (PDF)](https://www.krg.ca/en-CA/assets/Council/2026/feb/MPW_Activity_Report.pdf) |
+| Household tanks are plastic, water stagnates for days, cleaned every two years | real | Institut nordique du Québec, 2024-06-26 | [Monitoring water reservoirs](https://inq.ulaval.ca/en/Monitoring-water-reservoirs) |
+| A 13,600 L truck is filled 9 to 10 times a day (Puvirnituq) | real | APTN Investigates, 2025-11-10 | [Pipe Dreams: The Water Crisis in Nunavik](https://www.aptnnews.ca/investigates/pipe-dreams-the-water-crisis-in-nunavik/) |
+| Which buildings are homes | inferred | OSM tags nearly everything `building=yes`; unnamed buildings are treated as homes (422). | [data/houses.geojson](data/houses.geojson) (see `meta`) |
+| Sample and result dates for the June 2026 incident | assumed | Not published. | [data/incident-2026-06.json](data/incident-2026-06.json) (`assumptions`) |
+| The clean sample on 2026-06-09 | hypothetical | No lifting date was found. | [data/incident-2026-06.json](data/incident-2026-06.json) (`samples`) |
+| Delivery log, truck capacity (13,600 L), tank size (1,500 L), two-day cycle | simulated | Parameters in `data/config.json`. The driver app is what would produce the real log. | [data/config.json](data/config.json) · [js/sim.js](js/sim.js) |
+| Phone numbers, language preference per home | fictional | 555-01xx numbers. Languages randomised to match the census share. | [data/houses.geojson](data/houses.geojson) |
 
 Every fact in the app carries a badge: **sourced**, **assumed** or **hypothetical**.
 
