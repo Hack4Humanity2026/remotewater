@@ -150,7 +150,8 @@ footer { padding: 24px 16px; color: var(--muted); font-size: .85rem; text-align:
 @media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
 
 /* Story mode: the replay with nothing but one line, the map and Next */
-body.story-mode header.top > :not(h1) { display: none !important; }
+body.story-mode header.top > :not(h1):not(.langs) { display: none !important; }
+body.story-mode header.top .langs { margin-left: auto; }
 body.story-mode footer { display: none; }
 body.story-mode main { max-width: 1100px; }
 .story { cursor: pointer; }

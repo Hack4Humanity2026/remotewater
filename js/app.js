@@ -317,19 +317,48 @@ function viewReplay() {
   const step = steps[state.step];
   setNow(step.at);
   const st = statuses();
-  const last = state.step === steps.length - 1;
+  const d = state.data;
+  const notes = notificationsUpTo(state.now);
+  const boil = notes.filter((n) => n.kind === 'boil').length, clear = notes.filter((n) => n.kind === 'clear').length, na = notes.filter((n) => n.kind === 'notAffected').length;
   const frag = h(`
-    <div class="story" id="story">
-      <p class="story-text">${step.body}</p>
-      <svg class="map" role="img" aria-label="Map of Inukjuak buildings coloured by water status"></svg>
-      <div class="story-bar">
-        <span class="muted">${st.counts.red} homes boiling · ${st.counts.cleared} cleared · ${esc(fmtDate(state.now))}</span>
-        <span><button type="button" class="ghost" id="prev" ${state.step === 0 ? 'disabled' : ''}>◀</button> ${state.step + 1} / ${steps.length} <button type="button" id="next" ${last ? 'disabled' : ''}>Next ▶</button></span>
+    <div class="grid">
+      <div class="card span2">
+        <div class="steps" role="group" aria-label="Replay steps">${steps.map((s, i) => `<button type="button" data-step="${i}" ${i === state.step ? 'aria-current="step"' : ''} class="${i === state.step ? '' : 'ghost'}">${i + 1}. ${esc(s.title)}</button>`).join('')}</div>
+        <h2>${esc(step.title)} <span class="badge">${esc(fmtDate(state.now))}</span></h2>
+        <p>${step.body}</p>
+        <div class="row"><button type="button" class="secondary" id="prev" ${state.step === 0 ? 'disabled' : ''}>◀ Back</button><button type="button" id="next" ${state.step === steps.length - 1 ? 'disabled' : ''}>Next ▶</button></div>
       </div>
+      <div class="card span2">
+        <div class="tiles">
+          <div class="tile"><b>${d.houses.length}</b>served buildings</div>
+          <div class="tile red"><b>${st.counts.red}</b>${esc(t('statusRed'))}</div>
+          <div class="tile green"><b>${st.counts.cleared}</b>cleared since advisory</div>
+          <div class="tile"><b>${boil}</b>boil SMS sent</div>
+          <div class="tile"><b>${clear}</b>all-clear SMS sent</div>
+        </div>
+        <svg class="map" role="img" aria-label="Map of Inukjuak buildings coloured by water status"></svg>
+        ${legend()}
+      </div>
+      <div class="compare span2">
+        <div class="card then"><h2>What happened (sourced)</h2>
+          <ul>${d.incident.facts.slice(0, 3).map((f) => `<li>${esc(f.text)} <a href="${esc(f.url)}" target="_blank" rel="noopener" class="small">${esc(f.source)}</a></li>`).join('')}</ul>
+          <p class="muted small">Everyone boils. Nobody knows whether the water in their own tank came before or after the problem. The advisory has no end date.</p>
+        </div>
+        <div class="card now"><h2>With RemoteWater</h2>
+          <ul>
+            <li>Each fill is a batch linked to a truck and zone; the lab result sets its status.</li>
+            <li>The lab result triggers a trace: which loads, which homes, which delivery date.</li>
+            <li>Every home gets a text in Inuktitut, English or French within minutes.</li>
+            <li>Homes clear individually as post-clean water reaches their tank.</li>
+          </ul>
+          <p class="muted small">${d.incident.assumptions[0]}</p>
+        </div>
+      </div>
+      <div class="card span2"><h2>${label('outbox')}</h2>${smsList(notes.slice(-6).reverse())}${notes.length ? `<p class="muted small">${notes.length} messages so far${na ? `, including ${na} “not affected” notices` : ''}.</p>` : '<p class="muted">No messages yet.</p>'}</div>
     </div>`);
-  frag.querySelector('#prev').addEventListener('click', (e) => { e.stopPropagation(); state.step--; render(); });
-  frag.querySelector('#next').addEventListener('click', (e) => { e.stopPropagation(); state.step++; render(); });
-  frag.querySelector('#story').addEventListener('click', (e) => { if (e.target.closest('button') || e.target.closest('svg')) return; if (!last) { state.step++; render(); } });
+  frag.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => { state.step = +b.dataset.step; render(); }));
+  frag.querySelector('#prev').addEventListener('click', () => { state.step--; render(); });
+  frag.querySelector('#next').addEventListener('click', () => { state.step++; render(); });
   return frag;
 }
 
