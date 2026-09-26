@@ -278,6 +278,7 @@
         document.body.classList.remove('has-intro');
         if (instant) { intro.remove(); return; }
         intro.classList.add('leaving');
+        location.hash = '#replay';
         setTimeout(() => intro.remove(), 750);
       }
       if (new URLSearchParams(location.search).has('nointro')) { finish(true); return; }

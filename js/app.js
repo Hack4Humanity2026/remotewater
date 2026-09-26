@@ -64,6 +64,7 @@ function route() {
   const [view, arg] = (location.hash.replace('#', '') || 'overview').split('/');
   state.view = ['overview', 'notice', 'replay', 'plant', 'lab', 'truck', 'home'].includes(view) ? view : 'overview';
   state.persona = state.view;
+  if (state.view === 'replay') state.demoActive = true;
   if (view === 'home' && arg && houseById(state.data, arg)) state.houseId = arg;
   if (view === 'overview' && arg) state.selectedZone = arg;
   render();
@@ -300,13 +301,13 @@ function viewNotice() {
 function replaySteps() {
   const inc = state.data.incident;
   return [
-    { at: '2026-05-31T12:00:00-04:00', title: 'Before', body: `Inukjuak has no pipes. Three trucks fill at the plant and deliver to household tanks. Every fill is a batch; every delivery is logged by the driver's phone, offline, and synced when the truck returns to the plant. ${state.data.houses.length} served buildings are drawn from OpenStreetMap; the delivery log is simulated.` },
-    { at: '2026-06-02T10:30:00-04:00', title: 'Sample taken', body: `A routine bacteriological sample is taken at the loading arm (RQEP: about two per week). Nothing changes for residents yet; the sample is sent to the water lab for the quality decision.` },
-    { at: '2026-06-05T16:05:00-04:00', title: 'Lab result: FAIL', body: `The Montreal lab reports E. coli at the loading arm. RemoteWater immediately traces every load filled since the last clean sample and every home those loads reached. The window stays open until a clean sample exists, so new deliveries are also flagged.` },
-    { at: '2026-06-05T16:10:00-04:00', title: 'SMS in minutes', body: `Each affected home gets a boil-water text in its own language, naming the date of the delivery in its tank. Homes that did not receive affected water are told so. No radio, no Facebook, no data plan needed.` },
-    { at: '2026-06-09T12:00:00-04:00', title: 'Advisory continues', body: `Deliveries must continue; people need water. Every home stays red because the window is open. The plant disinfects and sends a new sample to the lab on June 9 (hypothetical).` },
-    { at: '2026-06-12T14:05:00-04:00', title: 'Clean result lands', body: `The clean result closes the window at June 9. Trucks never stopped, so by the time the result lands most tanks already hold water from loads filled after June 9. Those homes clear the same minute and get an all-clear text; the rest clear at their next delivery. Compare: in reality there was "no timeline for lifting the advisory".` },
-    { at: '2026-06-14T18:00:00-04:00', title: 'Two days later', body: `Every home is clear, and the record shows exactly which delivery cleared it. Each family knew the status of its own tank, not just the town's. The same log is the starting point for the investigation into the cause.` }
+    { at: '2026-05-31T12:00:00-04:00', title: 'Before', body: `Inukjuak, on the real map. 450 homes, one plant, three trucks. Every day or two a truck fills the tank inside each home.` },
+    { at: '2026-06-02T10:30:00-04:00', title: 'Sample taken', body: `Today: a sample is taken at the plant and flown to a lab in Montreal. Nobody hears anything for days.` },
+    { at: '2026-06-05T16:05:00-04:00', title: 'Lab result: FAIL', body: `Today: the lab calls. Everyone is told to boil, on the radio and the village Facebook group. No end date. With RemoteWater: every home that got that water is found in seconds.` },
+    { at: '2026-06-05T16:10:00-04:00', title: 'SMS in minutes', body: `Every home is told in minutes, in Inuktitut. On the phone, on the Facebook group, on the radio, and by the driver at the door.` },
+    { at: '2026-06-09T12:00:00-04:00', title: 'Advisory continues', body: `Trucks keep delivering. Every home stays red until a clean result exists.` },
+    { at: '2026-06-12T14:05:00-04:00', title: 'Clean result lands', body: `The clean result lands. Homes with clean water in the tank turn green the same minute. The rest turn green at their next delivery.` },
+    { at: '2026-06-14T18:00:00-04:00', title: 'Two days later', body: `Every home knows about its own tank. Today, the whole town would still be waiting.` }
   ];
 }
 
