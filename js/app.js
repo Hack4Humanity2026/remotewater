@@ -15,7 +15,8 @@ import { renderMap } from './map.js';
 
 const state = {
   data: null,
-  now: '2026-06-05T16:05:00-04:00',
+  now: '',
+  demoActive: false,
   view: 'overview',
   persona: 'overview',
   houseId: null,
@@ -48,7 +49,10 @@ const ms = (iso) => new Date(iso).getTime();
   state.notice = readNotice(state.data);
   state.ops = readOps(state.data);
   state.houseId = state.data.houses.find((x) => x.kind === 'clinic')?.id || state.data.houses[0].id;
-  $('#clock').addEventListener('change', (e) => { if (e.target.value) { state.now = new Date(e.target.value).toISOString(); render(); } });
+  $('#clock').addEventListener('change', (e) => {
+    if (!e.target.value) { state.now = ''; state.demoActive = false; render(); return; }
+    state.now = new Date(e.target.value).toISOString(); state.demoActive = true; render();
+  });
   $('#persona').addEventListener('change', (e) => { location.hash = '#' + e.target.value; });
   window.addEventListener('hashchange', route);
   route();
@@ -111,7 +115,7 @@ function placeStatus(st) {
 function render() {
   document.documentElement.lang = getLang();
   $('#clock').value = toLocalInput(state.now);
-  $('#clock').closest('.clock').hidden = state.view === 'overview' || state.view === 'notice';
+  $('#clock').closest('.clock').hidden = state.view === 'notice' && state.demoActive;
   $('#tabs').innerHTML = [['overview', 'tabOverview'], ['replay', 'tabReplay']]
     .map(([v, k]) => `<a href="#${v}" ${state.view === v ? 'aria-current="page"' : ''}>${esc(t(k))}</a>`).join('');
   $('#persona').value = state.persona === 'notice' ? 'notice' : state.persona;
@@ -119,12 +123,24 @@ function render() {
   $('#langs').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); localStorage.setItem('rw.lang', b.dataset.lang); render(); }));
   const main = $('#main');
   main.innerHTML = '';
-  main.appendChild({ overview: viewOverview, notice: viewNotice, replay: viewReplay, plant: viewPlant, lab: viewLab, truck: viewTruck, home: viewHome }[state.view]());
+  main.appendChild(state.demoActive ? { overview: viewOverview, notice: viewNotice, replay: viewReplay, plant: viewPlant, lab: viewLab, truck: viewTruck, home: viewHome }[state.view]() : viewBlankSlate());
   $('#clock').value = toLocalInput(state.now); // the replay may have moved the clock
+  if (!state.demoActive) return;
   document.querySelectorAll('svg.map').forEach((svg) => {
     const st = statuses();
     renderMap(svg, { places: state.data.places, roads: state.data.roads }, placeStatus(st), (p) => { state.houseId = p.id; location.hash = '#home/' + p.id; }, state.houseId);
   });
+}
+
+function viewBlankSlate() {
+  const frag = h(`
+    <div class="blank-slate card" role="status" aria-live="polite">
+      <span class="badge assumed">Demo data hidden</span>
+      <h2>Start with a demo date</h2>
+      <p>Choose a date and time in the <b>Demo date/time</b> control above to load the fictional Inukjuak snapshot.</p>
+      <p class="muted small">Until you choose a date, the map, notices, samples, batches, households and replay stay empty. This keeps the demo separate from real community data.</p>
+    </div>`);
+  return frag;
 }
 
 function label(key) {
@@ -562,7 +578,9 @@ function viewHome() {
 }
 
 function toLocalInput(iso) {
+  if (!iso) return '';
   const dt = new Date(iso);
+  if (Number.isNaN(dt.getTime())) return '';
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(dt).reduce((a, p) => (a[p.type] = p.value, a), {});
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour === '24' ? '00' : parts.hour}:${parts.minute}`;
 }
