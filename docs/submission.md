@@ -4,7 +4,7 @@ Character limits are from the participant guide. Problem areas: Water Safety and
 
 ## Brief description (max 250)
 
-E. coli hit Inukjuak's water plant in June 2026. Everyone boiled with no end date, because nobody knew which truckload was in their tank. RemoteWater ties each delivery to its batch and tells every home, offline, in Inuktitut, if its water is safe.
+June 2026: E. coli at Inukjuak's water plant. 1,800 people told to boil, no end date, because nobody knew which truckload was in which tank. RemoteWater logs every load and delivery, so a failed test tells each home in minutes, offline, in Inuktitut.
 
 ## How it addresses the problem (max 700)
 
