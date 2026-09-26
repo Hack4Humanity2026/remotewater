@@ -4,6 +4,8 @@
 
 **Facebook accommodation:** include the town/village's designated Facebook Page as a normal notice channel alongside SMS, radio and direct contact. The user reports evidence of local Facebook notice use; specific Page URLs and administrators have not yet been supplied or verified. Use one approved notice across channels. Facebook adds reach when connectivity is available; it does not replace the outage fallback.
 
+**Hackathon implementation:** the app simulates every channel. The Facebook, radio, SMS and household buttons update local demo state only; no account, carrier, station, Page, or resident is contacted. Keep the operational recommendations below as the follow-up design for a real deployment.
+
 ## 1. What “offline” permits
 
 | Outage | Available option, if verified locally | Dependency / limit |
@@ -56,9 +58,9 @@ On reconnect, merge contact events by stable event IDs, retain times/source, and
 
 Public offline wording: **“Offline — last update [time]. New notices may not be shown. For current information: [verified local station / agreed contact point].”** Retain the last known official advisory; never show an offline green map as assurance of current conditions.
 
-## 4. Facebook workflow
+## 4. Facebook workflow (simulated in the hackathon)
 
-**MVP: prepare in RemoteWater; publish manually through the designated Page's existing administrator.** This accommodates the channel without making API integration a prerequisite. Automatic posting is deferred pending a separate review of platform capabilities, permissions and community ownership.
+**Hackathon MVP: prepare and simulate in RemoteWater.** The app shows the approved post, lets a judge copy the preview, and advances a simulated “post published” state. No Facebook account, Page URL, or API is required. A later pilot can replace the simulation with the manual or automated process described below.
 
 1. **Prepare:** the authorized issuer selects an approved notice and Facebook. Prefill the designated Page, reviewed language versions, recognizable affected zones, instruction, issue time, notice ID/revision, issuing authority and next update time. Include a public RemoteWater notice link for detail, but keep the full essential instruction in the post so no click is required.
 2. **Publish:** show a preview and **Copy post** as the primary action. Offer **Open village Page** as a secondary action. Copying or opening the Page does not mark publication complete. If no authorized Page administrator is available, leave a pending task and continue the other channels.

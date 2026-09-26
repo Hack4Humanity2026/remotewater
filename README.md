@@ -6,7 +6,7 @@ Batch traceability and per-home boil-water alerts for trucked drinking water in 
 Built at Hack for Humanity Ottawa, 2026-09-26, for the "Designing for the North" challenge
 presented by Amenda Amidlak-Soucy of Inukjuak.
 
-Live prototype: open `index.html` over HTTP (see *Run it*). No build step, no server, no account.
+Live prototype: open `index.html` over HTTP (see *Run it*). No build step, no account, and no real messages are sent.
 
 ## The problem, in one paragraph
 
@@ -25,11 +25,11 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
 | Screen | Who | What it does |
 |---|---|---|
 | **Overview** | everyone | Public zone map/list with recorded water-quality status and active notices. Select a zone to see delivered batches and evidence. |
-| **Truck** | driver | "New load" at the plant records truck, time, free chlorine and turbidity. A reading under the 0.3 mg/L regulatory minimum blocks delivery. "Delivered" at each house stamps house, load, truck, time. Works with no signal; syncs at the plant. |
-| **Plant** | operator | Lab samples, recent loads, trace and the notice center. Prepare Facebook posts, radio/SMS actions and household contact routes; publication and resident contact are tracked separately. |
-| **Lab** | water lab | Receive samples sent by the plant, record pass/fail and a short result note, and return the result to the batch record. |
+| **Plant** | treatment plant persona | Register a batch, choose a truck and zone, pass the chlorine/turbidity gate, and send a simulated sample to the lab. |
+| **Lab** | water lab persona | Receive simulated samples, record pass/fail and a short result note, and return the result to the batch record. |
+| **Truck** | truck driver persona | Start the simulated plant assignment, check the chlorine gate, deliver to the route, and queue delivery events for a simulated sync. |
 | **Home** | resident | One large status card: safe / boil, with icon, colour and words in Inuktitut, English or French. When the water arrived, from which truck and batch, and an estimated safe-until date. Optional strip reading. |
-| **Notice channels** | authorized plant staff | Prepare one approved notice for Facebook, radio, SMS and household contact. Facebook publication is recorded manually; an outage leaves radio/visit routes available. |
+| **Notice channels** | communications persona | Simulate the same approved notice through Facebook, radio, SMS and household contact. The demo never contacts a real service. |
 | **Replay June 2026** | judges | The real incident, step by step, on the real map of Inukjuak: sample, failed result, trace, SMS, clean result, homes clearing one by one. |
 
 ### Why this is different
@@ -38,12 +38,14 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
   devices are phones the drivers and residents already have.
 - **The truck is the network.** Deliveries are logged offline on the driver's phone and synced
   when the truck returns to the plant, which it does many times a day.
-- **SMS first.** Alerts go out as text messages in each home's language. No data plan, no
-  smartphone, no Facebook needed. The web app is a bonus for those who want detail.
+- **SMS first.** The demo previews alerts as text messages in each home's language. No data plan,
+  smartphone, or Facebook account is needed to understand the workflow.
 - **Homes clear individually.** Once a clean sample closes the window, each home turns green the
   moment post-clean water reaches its tank, instead of waiting for a community-wide lifting date.
 - **A fill-time chlorine gate.** If low residual was the cause, a strip reading at the loading arm
   would have flagged it days before the lab did. (The actual cause was not published.)
+- **One demo, five personas.** The Persona dropdown moves judges between public, plant, lab, truck,
+  resident and communications views without sign-in. Complex logic and communications are simulated.
 
 ### Honest limits
 
@@ -128,7 +130,7 @@ docs/design.md             architecture, offline and SMS design, accessibility e
    people were told about the June advisory, and what an Inuktitut boil notice should say.
 2. Replace the simulated delivery log with the driver screen's real output (already the same shape).
 3. QR sticker per tank: scanning it opens `#home/<id>` and can double as the driver's "Delivered" tap.
-4. Real SMS gateway on the plant computer; driver-phone SMS fallback.
+4. Replace simulated SMS/Facebook/radio actions with approved integrations after the workflow is validated.
 5. Strip-reading by phone camera to calibrate the chlorine decay constants.
 
 ## Licence

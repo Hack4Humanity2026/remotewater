@@ -5,9 +5,7 @@
     "region": "Nunavik, Quebec",
     "lat": 58.455,
     "lon": -78.103,
-    "timezone": "America/Toronto",
-    "facebookPageUrl": "",
-    "facebookPageNote": "Set the verified community page URL after confirming the page and its primary/backup publishers."
+    "timezone": "America/Toronto"
   },
   "thresholds": {
     "freeChlorineMinMgL": 0.3,
