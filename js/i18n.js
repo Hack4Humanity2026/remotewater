@@ -7,11 +7,14 @@ export const LANGS = { en: 'English', fr: 'Français', iu: 'ᐃᓄᒃᑎᑐᑦ' 
 
 const S = {
   appName:        { en: 'RemoteWater', fr: 'RemoteWater', iu: null },
+  tabOverview:    { en: 'Overview', fr: 'Vue d’ensemble', iu: null },
+  tabNotice:      { en: 'Notice channels', fr: 'Canaux d’avis', iu: null },
   water:          { en: 'Water', fr: 'Eau', iu: 'ᐃᒥᖅ' },
   tabPlant:       { en: 'Plant', fr: 'Usine', iu: null },
+  tabLab:         { en: 'Lab', fr: 'Labo', iu: null },
   tabTruck:       { en: 'Truck', fr: 'Camion', iu: null },
   tabHome:        { en: 'Home', fr: 'Maison', iu: null },
-  tabReplay:      { en: 'Replay June 2026', fr: 'Rejouer juin 2026', iu: null },
+  tabReplay:      { en: 'Demo', fr: 'Démo', iu: null },
   statusGreen:    { en: 'Safe to drink', fr: 'Bonne à boire', iu: null },
   statusYellow:   { en: 'Check before drinking', fr: 'Vérifier avant de boire', iu: null },
   statusRed:      { en: 'Boil before drinking', fr: 'Faire bouillir avant de boire', iu: null },
