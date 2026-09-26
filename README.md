@@ -24,9 +24,12 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
 
 | Screen | Who | What it does |
 |---|---|---|
+| **Overview** | everyone | Public zone map/list with recorded water-quality status and active notices. Select a zone to see delivered batches and evidence. |
 | **Truck** | driver | "New load" at the plant records truck, time, free chlorine and turbidity. A reading under the 0.3 mg/L regulatory minimum blocks delivery. "Delivered" at each house stamps house, load, truck, time. Works with no signal; syncs at the plant. |
-| **Plant** | operator | Lab samples, recent loads, and the **trace**: when a bacteriological sample fails, every load filled since the last clean sample and every home those loads reached, priority buildings first. One button sends the SMS. |
+| **Plant** | operator | Lab samples, recent loads, trace and the notice center. Prepare Facebook posts, radio/SMS actions and household contact routes; publication and resident contact are tracked separately. |
+| **Lab** | water lab | Receive samples sent by the plant, record pass/fail and a short result note, and return the result to the batch record. |
 | **Home** | resident | One large status card: safe / boil, with icon, colour and words in Inuktitut, English or French. When the water arrived, from which truck and batch, and an estimated safe-until date. Optional strip reading. |
+| **Notice channels** | authorized plant staff | Prepare one approved notice for Facebook, radio, SMS and household contact. Facebook publication is recorded manually; an outage leaves radio/visit routes available. |
 | **Replay June 2026** | judges | The real incident, step by step, on the real map of Inukjuak: sample, failed result, trace, SMS, clean result, homes clearing one by one. |
 
 ### Why this is different
@@ -74,7 +77,7 @@ Every fact in the app carries a badge: **sourced**, **assumed** or **hypothetica
 python -m http.server 8080
 ```
 
-Then open <http://localhost:8080/#replay>. Any static host works (GitHub Pages, Cloudflare Pages).
+Then open <http://localhost:8080/#overview>. The public Overview is the default; the June incident replay is under Demo (`#replay`). Any static host works (GitHub Pages, Cloudflare Pages).
 Opening `index.html` directly from disk will not work because the page loads JSON with `fetch`.
 
 Tests:
@@ -86,7 +89,7 @@ node --test
 ## Layout
 
 ```
-index.html                 the app shell
+index.html                 the app shell (Overview is the default route)
 css/app.css                styles: large text, large targets, colour never alone
 js/trace.js                the core: bad window -> loads -> deliveries -> homes -> status (pure functions, tested)
 js/decay.js                free-chlorine decay estimate for the safe-until date
@@ -95,7 +98,10 @@ js/sms.js                  message templates and a simulated outbox
 js/i18n.js                 English, French, Inuktitut strings (Inuktitut mostly pending, see below)
 js/map.js                  SVG village map from OSM data, no tiles, no library
 js/store.js                data loading and the driver's offline queue (localStorage)
-js/app.js                  the four screens
+docs/usability-plan.md     operational UX plan and acceptance checks
+docs/screen-flows.md       proposed role flows and public Overview
+docs/outage-notifications.md  Facebook, radio and household outage workflow
+js/app.js                  the public Overview plus Plant, Lab, Truck, Home, Notice and Demo screens
 data/config.json           thresholds, trucks, tank size, delivery cycle
 data/houses.geojson        real building centroids with derived kind / priority / language
 data/roads.geojson         real roads

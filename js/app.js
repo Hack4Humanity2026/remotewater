@@ -1,6 +1,9 @@
 // app.js — screens. Hash router, no framework.
+//   #overview public zone quality overview (default)
+//   #notice  authorized notice channels (Facebook, radio, SMS, household contact)
 //   #replay  the June 2026 incident, step by step (the demo)
 //   #plant   operator: samples, loads, trace, notifications
+//   #lab     water lab: receive and record sample results
 //   #truck   driver: new load, deliveries, offline queue
 //   #home    household: one big status card
 import { loadAll, houseById, driverQueue } from './store.js';
@@ -13,14 +16,19 @@ import { renderMap } from './map.js';
 const state = {
   data: null,
   now: '2026-06-05T16:05:00-04:00',
-  view: 'replay',
+  view: 'overview',
   houseId: null,
+  selectedZone: null,
+  ops: null,
   truckId: 'W1',
   currentLoadId: null,
   step: 0,
   sent: new Set(),
   showAll: false
 };
+
+const NOTICE_KEY = 'remotewater.notice.v1';
+const OPS_KEY = 'remotewater.ops.v1';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const h = (html) => { const tpl = document.createElement('template'); tpl.innerHTML = html.trim(); return tpl.content; };
@@ -36,6 +44,8 @@ const ms = (iso) => new Date(iso).getTime();
     return;
   }
   setLang(localStorage.getItem('rw.lang') || 'en');
+  state.notice = readNotice(state.data);
+  state.ops = readOps(state.data);
   state.houseId = state.data.houses.find((x) => x.kind === 'clinic')?.id || state.data.houses[0].id;
   $('#clock').addEventListener('change', (e) => { if (e.target.value) { state.now = new Date(e.target.value).toISOString(); render(); } });
   window.addEventListener('hashchange', route);
@@ -43,9 +53,10 @@ const ms = (iso) => new Date(iso).getTime();
 })();
 
 function route() {
-  const [view, arg] = (location.hash.replace('#', '') || 'replay').split('/');
-  state.view = ['replay', 'plant', 'truck', 'home'].includes(view) ? view : 'replay';
+  const [view, arg] = (location.hash.replace('#', '') || 'overview').split('/');
+  state.view = ['overview', 'notice', 'replay', 'plant', 'lab', 'truck', 'home'].includes(view) ? view : 'overview';
   if (view === 'home' && arg && houseById(state.data, arg)) state.houseId = arg;
+  if (view === 'overview' && arg) state.selectedZone = arg;
   render();
 }
 
@@ -97,13 +108,14 @@ function placeStatus(st) {
 function render() {
   document.documentElement.lang = getLang();
   $('#clock').value = toLocalInput(state.now);
-  $('#tabs').innerHTML = [['replay', 'tabReplay'], ['plant', 'tabPlant'], ['truck', 'tabTruck'], ['home', 'tabHome']]
+  $('#clock').closest('.clock').hidden = state.view === 'overview' || state.view === 'notice';
+  $('#tabs').innerHTML = [['overview', 'tabOverview'], ['plant', 'tabPlant'], ['lab', 'tabLab'], ['truck', 'tabTruck'], ['home', 'tabHome'], ['replay', 'tabReplay']]
     .map(([v, k]) => `<a href="#${v}" ${state.view === v ? 'aria-current="page"' : ''}>${esc(t(k))}</a>`).join('');
   $('#langs').innerHTML = Object.entries(LANGS).map(([k, v]) => `<button type="button" data-lang="${k}" aria-pressed="${getLang() === k}">${v}</button>`).join('');
   $('#langs').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); localStorage.setItem('rw.lang', b.dataset.lang); render(); }));
   const main = $('#main');
   main.innerHTML = '';
-  main.appendChild({ replay: viewReplay, plant: viewPlant, truck: viewTruck, home: viewHome }[state.view]());
+  main.appendChild({ overview: viewOverview, notice: viewNotice, replay: viewReplay, plant: viewPlant, lab: viewLab, truck: viewTruck, home: viewHome }[state.view]());
   $('#clock').value = toLocalInput(state.now); // the replay may have moved the clock
   document.querySelectorAll('svg.map').forEach((svg) => {
     const st = statuses();
@@ -118,6 +130,160 @@ function label(key) {
 
 function legend() {
   return `<div class="legend" aria-hidden="true"><span class="lg-green">${esc(t('statusGreen'))}</span><span class="lg-red">${esc(t('statusRed'))}</span><span class="lg-prio">School / clinic / daycare</span><span class="lg-plant">Water plant</span><span class="lg-grey">Not served</span></div>`;
+}
+
+// ---------- PUBLIC OVERVIEW ----------
+function readNotice(data) {
+  const fallback = {
+    active: true,
+    demo: true,
+    id: 'A-014',
+    revision: 1,
+    scope: 'Inukjuak · demo notice',
+    authority: 'Water treatment plant',
+    issuedAt: '2026-06-05T16:05:00-04:00',
+    instruction: 'Boil water for 1 minute before drinking, cooking, brushing teeth or making baby formula.',
+    facebookPageUrl: data?.config?.community?.facebookPageUrl || '',
+    facebookPostUrl: '',
+    channels: {
+      facebook: { state: 'ready', publishedAt: '' },
+      radio: { state: 'ready', airedAt: '' },
+      sms: { state: 'ready', acceptedAt: '' },
+      households: { state: 'open', attempted: 0, informed: 0, total: data?.houses?.length || 0 }
+    }
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem(NOTICE_KEY) || 'null');
+    if (!saved) return fallback;
+    return {
+      ...fallback, ...saved, demo: saved.demo ?? fallback.demo,
+      channels: { ...fallback.channels, ...(saved.channels || {}), households: { ...fallback.channels.households, ...(saved.channels?.households || {}) } }
+    };
+  } catch { return fallback; }
+}
+
+function saveNotice() {
+  try { localStorage.setItem(NOTICE_KEY, JSON.stringify(state.notice)); } catch { /* private mode: keep the screen usable */ }
+}
+
+function readOps(data) {
+  const fallback = { batches: [], samples: [], strips: [] };
+  try {
+    const saved = JSON.parse(localStorage.getItem(OPS_KEY) || 'null');
+    if (!saved) return fallback;
+    return { ...fallback, ...saved, batches: saved.batches || [], samples: saved.samples || [], strips: saved.strips || [] };
+  } catch { return fallback; }
+}
+
+function saveOps() {
+  try { localStorage.setItem(OPS_KEY, JSON.stringify(state.ops)); } catch { /* private mode: keep the screen usable */ }
+}
+
+function newRecordId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}`; }
+
+function zoneSummaries() {
+  const houses = state.data.houses;
+  const lats = houses.map((h) => +h.lat), lons = houses.map((h) => +h.lon);
+  const midLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const midLon = (Math.min(...lons) + Math.max(...lons)) / 2;
+  const groups = { North: [], Central: [], South: [], East: [] };
+  const st = statuses().byHouse;
+  for (const h of houses) {
+    const north = +h.lat >= midLat, east = +h.lon >= midLon;
+    const name = north ? (east ? 'Central' : 'North') : (east ? 'East' : 'South');
+    groups[name].push(h);
+  }
+  return Object.entries(groups).map(([name, items]) => {
+    const opBatches = (state.ops?.batches || []).filter((b) => b.zone === name);
+    const opBatchIds = new Set(opBatches.map((b) => b.id));
+    const opSamples = (state.ops?.samples || []).filter((s) => opBatchIds.has(s.batchId));
+    const red = items.filter((h) => st[h.id]?.level === 'red').length + opSamples.filter((s) => s.result === 'fail').length;
+    const pendingSamples = state.data.samples.filter((s) => !s.resultAt || ms(s.resultAt) > ms(state.now)).length;
+    const pendingOps = opSamples.filter((s) => s.status === 'pending').length;
+    const level = red ? 'red' : (pendingSamples || pendingOps) ? 'amber' : items.length ? 'green' : 'none';
+    const labels = { red: 'Needs attention', amber: 'Awaiting results', green: 'Results within limits', none: 'No current data' };
+    const loads = new Set([...items.map((h) => currentLoadForHouse(state.data, h.id, state.now)?.load?.id).filter(Boolean), ...opBatches.map((b) => b.id)]);
+    return { name, houses: items, red, level, label: labels[level], loads: [...loads] };
+  });
+}
+
+function viewOverview() {
+  const zones = zoneSummaries();
+  const selected = zones.find((z) => z.name === state.selectedZone) || null;
+  const notice = state.notice;
+  const selectedOps = selected ? (state.ops?.batches || []).filter((b) => b.zone === selected.name).slice().reverse() : [];
+  const frag = h(`
+    <div class="grid overview">
+      ${notice.active ? `<div class="card span2 advisory" role="status" aria-live="polite">
+        <div><span class="badge assumed">${notice.demo ? 'Demo notice' : 'Official notice'} · revision ${esc(notice.revision)}</span><h2>${esc(notice.scope)}</h2>
+        <p><b>${esc(notice.instruction)}</b></p><p class="muted small">Issued ${esc(fmtDate(notice.issuedAt))} by ${esc(notice.authority)}. Latest information may also be shared through local Facebook, radio, SMS and household contact.${/^https:\/\/(www\.)?facebook\.com\//i.test(notice.facebookPageUrl || '') ? ` <a href="${esc(notice.facebookPageUrl)}" target="_blank" rel="noopener">Village notices on Facebook</a>` : ''}</p></div>
+        <a class="button-link secondary" href="#notice">Share / update notice</a>
+      </div>` : ''}
+      <div class="card span2 overview-intro"><h2>Water quality by zone</h2><p class="muted">Select a zone to see delivered batches and recorded test evidence.</p><div class="row"><span class="muted small">Demo snapshot ${esc(fmtDate(state.now))}</span><a class="button-link ghost" href="#replay">Open demo</a></div></div>
+      <div class="card span2"><div class="zone-grid" role="list" aria-label="Water quality by delivery zone">
+        ${zones.map((z) => `<button type="button" class="zone-card ${z.level} ${selected?.name === z.name ? 'selected' : ''}" data-zone="${esc(z.name)}" aria-pressed="${selected?.name === z.name}"><span class="zone-name">${esc(z.name)}</span><span class="zone-status">${z.level === 'red' ? '!' : z.level === 'amber' ? '◷' : z.level === 'green' ? '✓' : '?'} ${esc(z.label)}</span><span class="zone-meta">${z.houses.length} buildings · ${z.loads.length} recent batches</span></button>`).join('')}
+      </div></div>
+      <div class="card span2"><h2>Village map</h2><svg class="map" role="img" aria-label="Map of Inukjuak buildings coloured by recorded water status"></svg>${legend()}</div>
+      ${selected ? `<div class="card span2 zone-detail" id="zone-detail"><div class="row"><h2 class="grow">${esc(selected.name)} zone</h2><button type="button" class="ghost" id="close-zone">Close</button></div><p class="status-line ${selected.level}">${selected.level === 'red' ? '!' : selected.level === 'amber' ? '◷' : selected.level === 'green' ? '✓' : '?'} ${esc(selected.label)}</p><p>${selected.red ? `${selected.red} building${selected.red === 1 ? '' : 's'} linked to a flagged result. ` : ''}${selected.loads.length ? `${selected.loads.length} delivered batch${selected.loads.length === 1 ? '' : 'es'} in the current record.` : 'No current delivery is recorded.'}</p>${selectedOps.length ? `<h3>Registered batches</h3><ul class="list compact">${selectedOps.map((batch) => { const sample = (state.ops?.samples || []).find((s) => s.id === batch.sampleId); const label = sample?.result === 'fail' ? 'Needs attention' : sample?.result === 'pass' ? 'Results recorded' : 'Awaiting lab'; return `<li><span class="grow"><b>${esc(batch.id)}</b> · ${esc(batch.truckId)} · ${esc(batch.volumeL)} L <span class="muted small">${esc(fmtDate(batch.registeredAt))}</span></span><span class="badge ${sample?.result === 'fail' ? 'assumed' : sample?.result === 'pass' ? 'fact' : 'hyp'}">${esc(label)}</span></li>`; }).join('')}</ul>` : ''}<ul class="list compact">${selected.houses.slice(0, 8).map((house) => { const s = statuses().byHouse[house.id]; const cur = currentLoadForHouse(state.data, house.id, state.now); return `<li><span class="grow">${esc(house.name || house.id)} <span class="muted small">${esc(cur?.load?.id || 'no batch')}</span></span><span class="badge ${s?.level === 'red' ? 'assumed' : 'fact'}">${s?.level === 'red' ? 'Needs attention' : 'Recorded'}</span></li>`; }).join('')}</ul>${selected.houses.length > 8 ? `<p class="muted small">Showing 8 of ${selected.houses.length} buildings. Open a building from the map for its detail.</p>` : ''}</div>` : ''}
+    </div>`);
+  frag.querySelectorAll('[data-zone]').forEach((button) => button.addEventListener('click', () => { state.selectedZone = button.dataset.zone; location.hash = '#overview/' + encodeURIComponent(state.selectedZone); }));
+  frag.querySelector('#close-zone')?.addEventListener('click', () => { state.selectedZone = null; location.hash = '#overview'; });
+  return frag;
+}
+
+function noticeChannelState(channel) {
+  const names = { ready: 'Ready', published: 'Published · resident reach unknown', aired: 'Broadcast aired', accepted: 'Accepted by sender', open: 'Open route' };
+  return names[channel?.state] || 'Needs action';
+}
+
+function noticePostText() {
+  const n = state.notice;
+  return `RemoteWater notice ${n.id} · revision ${n.revision}\n${n.scope}\n\n${n.instruction}\n\nIssued ${fmtDate(n.issuedAt)} by ${n.authority}. Next update: check the village notice channels.`;
+}
+
+function copyText(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  const input = document.createElement('textarea'); input.value = text; input.setAttribute('readonly', ''); input.style.position = 'fixed'; input.style.opacity = '0'; document.body.appendChild(input); input.select(); document.execCommand('copy'); input.remove(); return Promise.resolve();
+}
+
+function viewNotice() {
+  const n = state.notice;
+  const hCount = n.channels.households;
+  const postText = noticePostText();
+  const pageUrl = n.facebookPageUrl || '';
+  const pageOkay = /^https:\/\/(www\.)?facebook\.com\//i.test(pageUrl);
+  const frag = h(`
+    <div class="grid notice-center">
+      <div class="card span2"><span class="badge assumed">Authorized workspace</span><h2>Share notice ${esc(n.id)} · revision ${esc(n.revision)}</h2><p class="muted">Prepare one approved message, then track each channel separately. Publishing does not prove a resident received or understood it.</p><div class="notice-meta"><b>${esc(n.scope)}</b><span>Issued ${esc(fmtDate(n.issuedAt))}</span><span>Authority: ${esc(n.authority)}</span></div></div>
+      <div class="card"><h2>Facebook Page</h2><p class="muted small">Use the designated village Page. A Page administrator publishes manually.</p><label for="facebook-page">Verified Page URL</label><input id="facebook-page" type="url" value="${esc(pageUrl)}" placeholder="https://www.facebook.com/…"><div class="row"><button type="button" id="save-page" class="secondary">Save Page</button><a id="open-page" class="button-link ghost" href="${esc(pageUrl)}" target="_blank" rel="noopener" ${pageOkay ? '' : 'hidden'}>Open Page</a></div><label for="facebook-post">Approved post text</label><textarea id="facebook-post" rows="7" readonly>${esc(postText)}</textarea><div class="row"><button type="button" id="copy-post">Copy post</button><span id="copy-status" class="muted small" aria-live="polite"></span></div><label for="facebook-post-url">Published post URL</label><input id="facebook-post-url" type="url" value="${esc(n.facebookPostUrl || '')}" placeholder="Paste the published post link"><div class="row"><button type="button" id="record-facebook" class="secondary">Record publication</button><span id="facebook-status" class="muted small" aria-live="polite"></span></div><p class="small"><span class="badge ${n.channels.facebook.state === 'published' ? 'fact' : 'assumed'}">${esc(noticeChannelState(n.channels.facebook))}</span>${n.channels.facebook.publishedAt ? ` ${esc(fmtDate(n.channels.facebook.publishedAt))}` : ''}</p></div>
+      <div class="card"><h2>Radio and SMS</h2><p class="muted small">Use the same approved text in reviewed local languages.</p><div class="channel-row"><span><b>Local radio</b><small>${esc(noticeChannelState(n.channels.radio))}</small></span><button type="button" id="mark-radio" class="secondary">${n.channels.radio.state === 'aired' ? 'Update broadcast' : 'Mark broadcast aired'}</button></div><div class="channel-row"><span><b>SMS</b><small>${esc(noticeChannelState(n.channels.sms))}</small></span><button type="button" id="mark-sms" class="secondary">${n.channels.sms.state === 'accepted' ? 'Record another send' : 'Mark SMS accepted'}</button></div><p class="muted small">A queued or accepted SMS is separate from a delivered message.</p></div>
+      <div class="card span2"><h2>Household contact route</h2><p>Radio/Facebook publication does not close this route. Track direct contact for households that need it.</p><div class="tiles"><div class="tile"><b>${hCount.total}</b>households in route</div><div class="tile green"><b>${hCount.informed}</b>resident informed</div><div class="tile amber"><b>${hCount.attempted - hCount.informed}</b>follow-up needed</div></div><div class="row"><button type="button" id="mark-house">Mark one resident informed</button><button type="button" id="mark-attempt" class="secondary">Record attempt</button><span class="muted small" aria-live="polite">${hCount.informed} of ${hCount.total} informed · ${hCount.attempted} attempts</span></div></div>
+      <div class="card span2"><h2>Offline status</h2><p class="muted">Save this notice and its channel records on the device. When connectivity returns, check the revision before publishing a saved Facebook draft. Never mark a notice published because Copy post was clicked.</p><p class="offline-note">${navigator.onLine ? 'Connected to the app.' : 'Offline — last saved notice remains visible; new notices may not be shown.'}</p></div>
+    </div>`);
+  const facebookPageInput = frag.querySelector('#facebook-page');
+  const openPage = frag.querySelector('#open-page');
+  const facebookStatus = frag.querySelector('#facebook-status');
+  const copyStatus = frag.querySelector('#copy-status');
+  const publishedPostInput = frag.querySelector('#facebook-post-url');
+  frag.querySelector('#save-page').addEventListener('click', () => {
+    state.notice.facebookPageUrl = facebookPageInput.value.trim();
+    saveNotice();
+    const valid = /^https:\/\/(www\.)?facebook\.com\//i.test(state.notice.facebookPageUrl);
+    openPage.hidden = !valid;
+    if (valid) openPage.href = state.notice.facebookPageUrl;
+    facebookStatus.textContent = valid ? 'Page URL saved.' : 'Save a verified https://www.facebook.com/… URL.';
+  });
+  frag.querySelector('#copy-post').addEventListener('click', () => copyText(postText).then(() => { copyStatus.textContent = 'Copied. Publication still needs to be recorded.'; }).catch(() => { copyStatus.textContent = 'Copy failed. Select the text and copy it manually.'; }));
+  frag.querySelector('#record-facebook').addEventListener('click', () => {
+    const url = publishedPostInput.value.trim();
+    if (!/^https:\/\/(www\.)?facebook\.com\//i.test(url)) { facebookStatus.textContent = 'Paste a Facebook post URL before recording publication.'; return; }
+    state.notice.facebookPostUrl = url; state.notice.channels.facebook = { state: 'published', publishedAt: new Date().toISOString() }; saveNotice(); render();
+  });
+  frag.querySelector('#mark-radio').addEventListener('click', () => { state.notice.channels.radio = { state: 'aired', airedAt: new Date().toISOString() }; saveNotice(); render(); });
+  frag.querySelector('#mark-sms').addEventListener('click', () => { state.notice.channels.sms = { state: 'accepted', acceptedAt: new Date().toISOString() }; saveNotice(); render(); });
+  frag.querySelector('#mark-house').addEventListener('click', () => { hCount.attempted = Math.min(hCount.total, hCount.attempted + 1); hCount.informed = Math.min(hCount.total, hCount.informed + 1); hCount.state = hCount.informed >= hCount.total ? 'complete' : 'open'; saveNotice(); render(); });
+  frag.querySelector('#mark-attempt').addEventListener('click', () => { hCount.attempted = Math.min(hCount.total, hCount.attempted + 1); saveNotice(); render(); });
+  return frag;
 }
 
 // ---------- REPLAY ----------
@@ -203,8 +369,23 @@ function viewPlant() {
   const todayLoads = d.loads.filter((l) => ms(l.filledAt) <= ms(state.now)).slice(-12).reverse();
   const notes = notificationsUpTo(state.now);
   const pending = notes.filter((n) => !state.sent.has(n.at + n.house.id + n.kind));
+  const opBatches = state.ops?.batches || [];
+  const opSamples = state.ops?.samples || [];
+  const zones = zoneSummaries().map((z) => z.name);
   const frag = h(`
     <div class="grid">
+      <div class="card span2 action-banner"><div><span class="badge assumed">Notice channels</span><h2>Share an approved notice</h2><p class="muted small">Prepare Facebook, radio, SMS and household contact actions from one revisioned notice.</p></div><a class="button-link" href="#notice">Open notice center</a></div>
+      <div class="card span2"><span class="badge fact">Plant operator</span><h2>Register a water batch</h2><p class="muted small">Record the fill once, check the gate, then send one sample to the lab. The truck can work offline after this step.</p>
+        <div class="form-grid">
+          <div><label for="batch-truck">Truck</label><select id="batch-truck">${d.config.trucks.map((tr) => `<option value="${esc(tr.id)}">${esc(tr.id)}</option>`).join('')}</select></div>
+          <div><label for="batch-zone">Drop-off zone</label><select id="batch-zone">${zones.map((z) => `<option value="${esc(z)}">${esc(z)}</option>`).join('')}</select></div>
+          <div><label for="batch-volume">Volume (L)</label><input id="batch-volume" type="number" min="1" step="100" value="13600" inputmode="numeric"></div>
+          <div><label for="batch-cl">Free chlorine (mg/L)</label><input id="batch-cl" type="number" min="0" max="5" step="0.05" value="0.8" inputmode="decimal"></div>
+          <div><label for="batch-turbidity">Turbidity (NTU)</label><input id="batch-turbidity" type="number" min="0" max="50" step="0.1" value="0.4" inputmode="decimal"></div>
+        </div>
+        <p id="batch-gate" class="small" aria-live="polite"></p>
+        <div class="row"><button type="button" id="register-batch">Register batch and send sample</button><span id="batch-status" class="muted small" aria-live="polite"></span></div>
+      </div>
       <div class="card"><h2>Lab samples (loading arm)</h2>
         <table><thead><tr><th>${label('sampleTaken')}</th><th>${label('resultBack')}</th><th>Result</th></tr></thead><tbody>
         ${d.samples.map((s) => { const k = ms(s.resultAt) <= ms(state.now); return `<tr class="${k && s.result === 'fail' ? 'fail' : ''}"><td>${esc(fmtDate(s.takenAt))}${s.assumed ? ' <span class="badge assumed">assumed</span>' : ''}${s.hypothetical ? ' <span class="badge hyp">hypothetical</span>' : ''}</td><td>${k ? esc(fmtDate(s.resultAt)) : '<span class="muted">pending</span>'}</td><td>${k ? (s.result === 'fail' ? `<b>${esc(t('fail'))}</b> ${esc(s.value || '')}` : esc(t('pass'))) : ''}</td></tr>`; }).join('')}
@@ -231,8 +412,59 @@ function viewPlant() {
         </tbody></table>
       </div>
       <div class="card"><h2>Village</h2><svg class="map" role="img" aria-label="Map of Inukjuak buildings coloured by water status"></svg>${legend()}</div>
+      <div class="card span2"><h2>Registered batches</h2>${opBatches.length ? `<table><thead><tr><th>Batch</th><th>Truck</th><th>Zone</th><th>Registered</th><th>Lab</th></tr></thead><tbody>${opBatches.slice().reverse().map((b) => { const s = opSamples.find((x) => x.id === b.sampleId); return `<tr><td><b>${esc(b.id)}</b></td><td>${esc(b.truckId)}</td><td>${esc(b.zone)}</td><td>${esc(fmtDate(b.registeredAt))}</td><td><span class="badge ${s?.result === 'fail' ? 'assumed' : s?.result === 'pass' ? 'fact' : 'hyp'}">${s?.result === 'fail' ? 'FAIL' : s?.result === 'pass' ? 'PASS' : 'Pending'}</span></td></tr>`; }).join('')}</tbody></table>` : '<p class="muted">No locally registered batches yet.</p>'}</div>
     </div>`);
+  const batchTruck = frag.querySelector('#batch-truck'), batchZone = frag.querySelector('#batch-zone'), batchVolume = frag.querySelector('#batch-volume');
+  const batchCl = frag.querySelector('#batch-cl'), batchTurbidity = frag.querySelector('#batch-turbidity'), batchGate = frag.querySelector('#batch-gate'), batchStatus = frag.querySelector('#batch-status');
+  const checkBatchGate = () => {
+    const cl = +batchCl.value, turbidity = +batchTurbidity.value;
+    const ok = cl >= d.config.thresholds.freeChlorineMinMgL && turbidity <= d.config.thresholds.turbidityMaxNTU;
+    batchGate.textContent = ok ? `Gate clear: ${cl} mg/L chlorine and ${turbidity} NTU turbidity.` : `Hold at plant: chlorine must be ≥ ${d.config.thresholds.freeChlorineMinMgL} mg/L and turbidity ≤ ${d.config.thresholds.turbidityMaxNTU} NTU.`;
+    batchGate.style.color = ok ? 'var(--green)' : 'var(--red)';
+    return ok;
+  };
+  batchCl.addEventListener('input', checkBatchGate); batchTurbidity.addEventListener('input', checkBatchGate); checkBatchGate();
+  frag.querySelector('#register-batch').addEventListener('click', () => {
+    if (!checkBatchGate()) { batchStatus.textContent = 'Correct the readings before registering this batch.'; return; }
+    try {
+      const batch = { id: newRecordId('B'), truckId: batchTruck.value, zone: batchZone.value, volumeL: +batchVolume.value, freeCl: +batchCl.value, turbidity: +batchTurbidity.value, registeredAt: state.now, status: 'awaiting_lab' };
+      const sample = { id: newRecordId('S'), batchId: batch.id, takenAt: state.now, sentAt: state.now, dueAt: new Date(ms(state.now) + d.config.labTurnaroundHours * 3600e3).toISOString(), status: 'pending', result: null, resultAt: null, value: '' };
+      batch.sampleId = sample.id; state.ops.batches.push(batch); state.ops.samples.push(sample); saveOps(); render();
+    } catch (e) { batchStatus.textContent = `Could not save batch: ${e.message}`; }
+  });
   frag.querySelector('#send').addEventListener('click', () => { pending.forEach((n) => state.sent.add(n.at + n.house.id + n.kind)); render(); });
+  return frag;
+}
+
+// ---------- LAB ----------
+function viewLab() {
+  const d = state.data;
+  const samples = state.ops?.samples || [];
+  const batches = state.ops?.batches || [];
+  const pending = samples.filter((s) => s.status === 'pending');
+  const selectedId = state.labSampleId && samples.some((s) => s.id === state.labSampleId) ? state.labSampleId : pending[0]?.id;
+  const selected = samples.find((s) => s.id === selectedId) || null;
+  const batch = selected ? batches.find((b) => b.id === selected.batchId) : null;
+  const frag = h(`
+    <div class="grid">
+      <div class="card span2"><span class="badge fact">Water lab</span><h2>Record a sample result</h2><p class="muted small">Choose a sample sent by the plant, record the result once, and the batch status updates for the village overview.</p>
+        ${pending.length ? `<label for="lab-sample">Pending sample</label><select id="lab-sample">${pending.map((s) => { const b = batches.find((x) => x.id === s.batchId); return `<option value="${esc(s.id)}" ${s.id === selectedId ? 'selected' : ''}>${esc(s.id)} · ${esc(b?.id || s.batchId)} · ${esc(b?.zone || 'zone unknown')}</option>`; }).join('')}</select>
+        <div class="notice-meta"><span>Batch: <b>${esc(batch?.id || '—')}</b></span><span>Zone: <b>${esc(batch?.zone || '—')}</b></span><span>Sent: ${selected ? esc(fmtDate(selected.sentAt)) : '—'}</span></div>
+        <div class="form-grid"><div><label for="lab-result">Result</label><select id="lab-result"><option value="pass">Pass — within limits</option><option value="fail">Fail — notify plant</option></select></div><div><label for="lab-value">Reported value</label><input id="lab-value" type="text" placeholder="e.g. E. coli not detected"></div><div class="span2"><label for="lab-note">Lab note (optional)</label><textarea id="lab-note" rows="3" placeholder="Method, reviewer or follow-up"></textarea></div></div>
+        <div class="row"><button type="button" id="record-lab">Record result</button><span id="lab-status" class="muted small" aria-live="polite"></span></div>` : '<p class="empty-state">No pending samples. The plant can register a batch and send a sample here.</p>'}
+      </div>
+      <div class="card span2"><h2>Recent lab results</h2>${samples.length ? `<table><thead><tr><th>Sample</th><th>Batch</th><th>Zone</th><th>Result</th><th>Recorded</th></tr></thead><tbody>${samples.slice().reverse().map((s) => { const b = batches.find((x) => x.id === s.batchId); return `<tr class="${s.result === 'fail' ? 'fail' : ''}"><td>${esc(s.id)}</td><td>${esc(s.batchId)}</td><td>${esc(b?.zone || '—')}</td><td>${s.result ? `<b>${s.result === 'fail' ? 'FAIL' : 'PASS'}</b> ${esc(s.value || '')}` : '<span class="muted">Pending</span>'}</td><td>${s.resultAt ? esc(fmtDate(s.resultAt)) : '—'}</td></tr>`; }).join('')}</tbody></table>` : '<p class="muted">No local lab records yet.</p>'}</div>
+      <div class="card span2"><h2>What happens next</h2><p class="muted">A failed result should trigger the plant’s trace and notice workflow. A pass closes this batch’s waiting state; confirm the public notice before residents are told the advisory has ended.</p></div>
+    </div>`);
+  const labResult = frag.querySelector('#lab-result'), labValue = frag.querySelector('#lab-value'), labNote = frag.querySelector('#lab-note');
+  frag.querySelector('#lab-sample')?.addEventListener('change', (e) => { state.labSampleId = e.target.value; render(); });
+  frag.querySelector('#record-lab')?.addEventListener('click', () => {
+    const sample = samples.find((s) => s.id === selectedId); if (!sample) return;
+    const result = labResult.value;
+    sample.result = result; sample.status = 'recorded'; sample.resultAt = state.now; sample.value = labValue.value.trim() || (result === 'pass' ? 'Within limits' : 'Detected — review required'); sample.note = labNote.value.trim();
+    const b = batches.find((x) => x.id === sample.batchId); if (b) b.status = result === 'fail' ? 'flagged' : 'cleared';
+    saveOps(); render();
+  });
   return frag;
 }
 
@@ -272,8 +504,9 @@ function viewTruck() {
   const clInput = frag.querySelector('#cl'), gate = frag.querySelector('#gate');
   const checkGate = () => { const v = +clInput.value; gate.textContent = v < min ? `⚠ ${v} mg/L is below the ${min} mg/L minimum at the plant outlet (RQEP art. 8). Do not leave the plant. Call the operator.` : `Free chlorine ${v} mg/L: OK to deliver.`; gate.style.color = v < min ? 'var(--red)' : 'var(--green)'; };
   clInput.addEventListener('input', checkGate); checkGate();
+  const turbidityInput = frag.querySelector('#tu'), emptyInput = frag.querySelector('#empty');
   frag.querySelector('#fill').addEventListener('click', () => {
-    const load = { id: 'L-' + Date.now().toString(36).toUpperCase(), truckId: state.truckId, filledAt: state.now, freeCl: +clInput.value, turbidity: +frag.querySelector('#tu').value, emptiedBefore: frag.querySelector('#empty').checked };
+    const load = { id: 'L-' + Date.now().toString(36).toUpperCase(), truckId: state.truckId, filledAt: state.now, freeCl: +clInput.value, turbidity: +turbidityInput.value, emptiedBefore: emptyInput.checked };
     driverQueue.push({ type: 'load', load });
     state.currentLoadId = load.id;
     render();
@@ -326,8 +559,9 @@ function viewHome() {
       <div class="card span2"><svg class="map" role="img" aria-label="Map with this home highlighted"></svg>${legend()}</div>
     </div>`);
   frag.querySelector('#house').addEventListener('change', (e) => { state.houseId = e.target.value; location.hash = '#home/' + state.houseId; });
+  const stripInput = frag.querySelector('#strip'), stripOutput = frag.querySelector('#stripout');
   frag.querySelector('#stripbtn').addEventListener('click', () => {
-    const v = +frag.querySelector('#strip').value, out = frag.querySelector('#stripout');
+    const v = +stripInput.value, out = stripOutput;
     if (!v && v !== 0) { out.textContent = ''; return; }
     out.textContent = v < tank.freeChlorineMinMgL ? `⚠ ${v} mg/L is below ${tank.freeChlorineMinMgL}. Ask for a fresh delivery and boil until then.` : `✓ ${v} mg/L: chlorine residual is present. Reading logged for calibration (est. was ${est?.toFixed(2) ?? '–'}).`;
   });

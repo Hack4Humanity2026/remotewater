@@ -1,0 +1,126 @@
+<style>
+#rw-concept { --rw-bg:light-dark(#f6f8fa,#14212b); --rw-paper:light-dark(#ffffff,#1c2e3a); --rw-ink:light-dark(#14202b,#eff6fa); --rw-muted:light-dark(#4c5b68,#b7c8d3); --rw-line:light-dark(#c9d4dc,#4b606e); --rw-blue:light-dark(#1b5aa6,#9bc6ff); --rw-red:light-dark(#9c2821,#ffb6af); --rw-redfill:light-dark(#fbe4e2,#532f30); --rw-amber:light-dark(#775000,#f7d285); --rw-amberfill:light-dark(#fff1cf,#51442b); --rw-green:light-dark(#21663a,#a5dfb6); --rw-greenfill:light-dark(#e3f4e8,#264c3b); color:var(--rw-ink); background:var(--rw-bg); font:16px/1.5 system-ui,sans-serif; padding-bottom:20px; }
+#rw-concept * {box-sizing:border-box}
+#rw-concept header {display:flex;flex-wrap:wrap;align-items:center;gap:18px;padding:16px 22px;background:var(--rw-paper);border-bottom:1px solid var(--rw-line)}
+#rw-concept header strong {font-size:20px;margin-right:auto}
+#rw-concept small {color:var(--rw-muted);font-size:13px}
+#rw-concept main {padding:20px;max-width:1100px;margin:auto}
+#rw-concept h2 {font-size:25px;margin:0 0 4px}
+#rw-concept h3 {font-size:20px;margin:0 0 8px}
+#rw-concept p {margin:8px 0}
+#rw-concept button {font:inherit;color:var(--rw-ink);background:var(--rw-paper);border:1px solid var(--rw-line);border-radius:7px;min-height:48px;padding:9px 14px;cursor:pointer}
+#rw-concept button:focus-visible,#rw-concept [tabindex]:focus-visible {outline:3px solid var(--rw-blue);outline-offset:3px}
+#rw-concept button[aria-pressed=true] {border:2px solid var(--rw-blue);color:var(--rw-blue)}
+#rw-concept .rw-tools {display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0}
+#rw-concept .rw-tools span {margin-right:auto;color:var(--rw-muted);font-size:14px}
+#rw-concept .rw-layout {display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+#rw-concept .rw-layout.rw-unselected {grid-template-columns:1fr}
+#rw-concept .rw-geography {background:var(--rw-paper);border:1px solid var(--rw-line);border-radius:10px;overflow:hidden}
+#rw-concept svg {width:100%;height:auto;display:block}
+#rw-concept svg text {fill:var(--rw-ink);font-family:system-ui,sans-serif;font-size:17px}
+#rw-concept .rw-zone {cursor:pointer}
+#rw-concept .rw-zone path {stroke:var(--rw-paper);stroke-width:5}
+#rw-concept .rw-zone:focus path,#rw-concept .rw-zone[aria-pressed=true] path {stroke:var(--rw-blue);stroke-width:4}
+#rw-concept .rw-zone[data-dim=true] path {opacity:.35}
+#rw-concept .rw-legend {display:flex;flex-wrap:wrap;gap:6px 20px;padding:12px 16px;font-size:14px;border-top:1px solid var(--rw-line)}
+#rw-concept aside {background:var(--rw-paper);padding:18px;border:1px solid var(--rw-line);border-radius:10px}
+#rw-concept .rw-close {float:right;padding:0 10px;min-height:36px;font-size:14px}
+#rw-concept .rw-status {font-weight:650}
+#rw-concept .rw-batch {display:block;text-align:left;width:100%;margin:10px 0}
+#rw-concept .rw-batch small {display:block}
+#rw-concept .rw-path {padding:14px 0;border-block:1px solid var(--rw-line);margin:14px 0}
+#rw-concept .rw-zone-list {padding:12px;display:grid;gap:10px}
+#rw-concept .rw-zone-list button {text-align:left}
+#rw-concept .rw-zone-list button span {display:block;color:var(--rw-muted)}
+#rw-concept [hidden] {display:none!important}
+#rw-concept details {margin-top:16px}
+#rw-concept summary {cursor:pointer;min-height:44px;padding-top:8px}
+#rw-concept footer {padding:0 20px;color:var(--rw-muted);font-size:13px}
+@media(max-width:850px) {#rw-concept .rw-layout {grid-template-columns:1fr}}
+@media(max-width:650px) {#rw-concept main {padding:15px} #rw-concept header {padding:14px} #rw-concept h2 {font-size:22px} #rw-concept svg text {font-size:28px} #rw-concept .rw-zone text:nth-of-type(2) {display:none}}
+</style>
+<section id="rw-concept" aria-label="RemoteWater public overview concept">
+  <header><strong>RemoteWater</strong><span>Overview</span><small>Concept · fictional zones and results</small></header>
+  <main>
+    <h2>Water quality by zone</h2>
+    <p>Select a zone to see delivered batches and recorded tests.</p>
+    <div class="rw-tools"><span>Demo snapshot · 26 Sep, 10:42</span><button id="rw-map-button" aria-pressed="true">Map</button><button id="rw-list-button" aria-pressed="false">List</button></div>
+    <div class="rw-layout rw-unselected" id="rw-layout">
+      <div class="rw-geography">
+        <svg id="rw-map" viewBox="0 0 660 350" role="group" aria-label="Schematic delivery zones, not real boundaries. North needs attention; Central awaits results; South has results within limits; East has no current data.">
+          <path d="M30 300 Q80 240 65 160 Q50 80 125 10" fill="none" stroke="var(--rw-line)" stroke-width="20"/>
+          <g class="rw-zone" data-zone="North" role="button" tabindex="0" aria-pressed="false" aria-label="North, needs attention">
+            <path d="M145 30 L355 30 L355 160 L110 150 Z" fill="var(--rw-redfill)"/>
+            <text x="215" y="89">North</text><text x="156" y="120">! Needs attention</text>
+          </g>
+          <g class="rw-zone" data-zone="Central" role="button" tabindex="0" aria-pressed="false" aria-label="Central, awaiting results">
+            <path d="M360 30 L620 60 L595 183 L360 160 Z" fill="var(--rw-amberfill)"/>
+            <text x="451" y="97">Central</text><text x="400" y="129">◷ Awaiting results</text>
+          </g>
+          <g class="rw-zone" data-zone="South" role="button" tabindex="0" aria-pressed="false" aria-label="South, results within limits">
+            <path d="M110 155 L355 165 L375 314 L120 300 Z" fill="var(--rw-greenfill)"/>
+            <text x="210" y="227">South</text><text x="132" y="259">✓ Results within limits</text>
+          </g>
+          <g class="rw-zone" data-zone="East" role="button" tabindex="0" aria-pressed="false" aria-label="East, no current data">
+            <path d="M360 166 L595 189 L621 316 L380 314 Z" fill="var(--rw-bg)"/>
+            <text x="465" y="233">East</text><text x="409" y="265">? No current data</text>
+          </g>
+        </svg>
+        <div id="rw-list" class="rw-zone-list" hidden></div>
+        <div class="rw-legend"><span>! Attention</span><span>◷ Pending</span><span>✓ Within limits</span><span>? No data</span></div>
+      </div>
+      <aside id="rw-detail" aria-live="polite" hidden></aside>
+    </div>
+  </main>
+  <footer>Recorded tests describe available evidence. Official advisories are shown separately. Map boundaries are illustrative.</footer>
+</section>
+<script>
+(() => {
+  const root=document.getElementById('rw-concept');
+  const detail=root.querySelector('#rw-detail');
+  const layout=root.querySelector('#rw-layout');
+  const ui={view:'map',zone:null,batch:null};
+  const zones={
+    North:{status:'! Needs attention',reason:'1 delivered batch has a flagged lab result.',batches:['B-024','B-019'],coverage:'Partial zone delivery recorded'},
+    Central:{status:'◷ Awaiting results',reason:'The delivered batch is awaiting its laboratory panel.',batches:['B-019'],coverage:'Partial zone delivery recorded'},
+    South:{status:'✓ Results within limits',reason:'Required recorded tests are within the configured limits.',batches:['B-021'],coverage:'Delivery coverage recorded for this example'},
+    East:{status:'? No current data',reason:'No current delivery and test evidence is available.',batches:[],coverage:'Coverage unknown'}
+  };
+  const batches={
+    'B-024':{status:'Flagged lab result',sample:'S-024',truck:'W1',zones:['North'],lab:'Flagged · published 26 Sep, 10:40',field:'Photo uploaded · reading requires review',at:'26 Sep, 09:20'},
+    'B-019':{status:'Awaiting results',sample:'S-019',truck:'W2',zones:['North','Central'],lab:'Panel pending · sample received',field:'Photo uploaded · observation recorded',at:'25 Sep, 15:10'},
+    'B-021':{status:'Results within limits',sample:'S-021',truck:'W3',zones:['South'],lab:'Required panel within limits · published 26 Sep, 10:15',field:'Photo and reading recorded',at:'26 Sep, 09:40'}
+  };
+  function selectZone(name){ui.zone=name;ui.batch=null;render();}
+  function render(){
+    root.querySelector('#rw-map').toggleAttribute('hidden',ui.view!=='map');
+    root.querySelector('#rw-list').hidden=ui.view!=='list';
+    root.querySelector('#rw-map-button').setAttribute('aria-pressed',String(ui.view==='map'));
+    root.querySelector('#rw-list-button').setAttribute('aria-pressed',String(ui.view==='list'));
+    root.querySelectorAll('.rw-zone').forEach(el=>{
+      el.setAttribute('aria-pressed',String(el.dataset.zone===ui.zone));
+      el.dataset.dim=String(Boolean(ui.batch&&!batches[ui.batch].zones.includes(el.dataset.zone)));
+    });
+    root.querySelectorAll('[data-list-zone]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.listZone===ui.zone)));
+    detail.hidden=!ui.zone;layout.classList.toggle('rw-unselected',!ui.zone);
+    if(!ui.zone)return;
+    if(ui.batch){
+      const b=batches[ui.batch];
+      detail.innerHTML=`<button class="rw-back">Back to ${ui.zone}</button><h3 style="margin-top:14px">Batch ${ui.batch}</h3><p class="rw-status">${b.status}</p><div class="rw-path">Plant → Sample ${b.sample}<br>Lab → Truck ${b.truck}<br>Delivered to ${b.zones.join(' + ')}</div><p><b>Lab</b><br>${b.lab}</p><p><b>Field strip</b><br>${b.field}</p><p><b>Delivery</b><br>${b.at}</p><details><summary>Evidence scope</summary><p>Example records only. A strip observation does not replace the lab panel or lift an advisory.</p></details>`;
+      detail.querySelector('.rw-back').onclick=()=>{ui.batch=null;render();};
+    }else{
+      const z=zones[ui.zone];
+      detail.innerHTML=`<button class="rw-close" aria-label="Close zone details">Close</button><h3>${ui.zone}</h3><p class="rw-status">${z.status}</p><p>${z.reason}</p>${z.batches.length?'<p><b>Delivered batches</b></p>':''}${z.batches.map(id=>`<button class="rw-batch" data-batch="${id}">${id}<small>${batches[id].status} →</small></button>`).join('')}<small>${z.coverage}</small>`;
+      detail.querySelector('.rw-close').onclick=()=>{const previous=ui.zone;ui.zone=null;render();const selector=ui.view==='map'?`.rw-zone[data-zone="${previous}"]`:`[data-list-zone="${previous}"]`;root.querySelector(selector).focus();};
+      detail.querySelectorAll('[data-batch]').forEach(el=>el.onclick=()=>{ui.batch=el.dataset.batch;render();detail.querySelector('.rw-back').focus();});
+    }
+  }
+  root.querySelector('#rw-list').innerHTML=Object.entries(zones).map(([name,z])=>`<button data-list-zone="${name}" aria-pressed="false">${name}<span>${z.status}</span></button>`).join('');
+  root.querySelectorAll('[data-list-zone]').forEach(el=>el.onclick=()=>selectZone(el.dataset.listZone));
+  root.querySelectorAll('.rw-zone').forEach(el=>{el.onclick=()=>selectZone(el.dataset.zone);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectZone(el.dataset.zone);}};});
+  root.querySelector('#rw-map-button').onclick=()=>{ui.view='map';render();};
+  root.querySelector('#rw-list-button').onclick=()=>{ui.view='list';render();};
+  render();
+  if(globalThis.Tweak){const tweak=new Tweak({container:root,onChange:render});tweak.addSelect(ui,'view',{label:'Default overview',options:[{label:'Map first',value:'map'},{label:'List first',value:'list'}]});}
+})();
+</script>
