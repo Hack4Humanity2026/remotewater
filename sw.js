@@ -1,7 +1,7 @@
 // Offline cache. Everything the app needs is static and small (a few hundred KB, mostly map data),
 // so we cache it all on install. Network-first with cache fallback: a fresh deploy is picked up
 // when there is signal, and the last good copy is served when there is none.
-const CACHE = 'remotewater-v4';
+const CACHE = 'remotewater-v5';
 const ASSETS = [
   './', './index.html', './css/app.css',
   './js/app.js', './js/trace.js', './js/decay.js', './js/i18n.js', './js/sim.js', './js/sms.js', './js/map.js', './js/store.js',

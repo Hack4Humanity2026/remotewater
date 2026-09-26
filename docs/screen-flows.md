@@ -1,6 +1,6 @@
 # RemoteWater: screen flows for review
 
-Review the public Overview first (2 minutes). These are proposed screens, not implemented behavior. IDs, zone names and results below are fictional examples.
+Review the public Overview first (2 minutes). The hackathon build uses one Persona dropdown and simulated records/channels; authentication, shared storage and real communications are later work. IDs, zone names and results below are fictional examples.
 
 ## 1. Public Overview
 
@@ -175,27 +175,26 @@ Sample, result and delivery states evolve independently:
 
 Use separate evidence and advisory tracks so a laboratory pass cannot silently erase an official advisory.
 
-## 6. Share an approved notice
+## 6. Simulate an approved notice
 
-This task belongs to the authorized plant/notice workspace. A Page administrator may publish approved content without having authority to issue or lift advisories.
+This task belongs to the Communications persona. The demo uses one approved notice and simulated channel actions; there is no account, Page connection, or external send.
 
 ```text
-Share notice A-014 · Revision 2 · North zone
+Simulate notice A-014 · Revision 2 · North zone
 Approved by [authority] · Issued [local date/time]
 
 Channel: [Facebook]  SMS  Radio  Household contact
-Destination: [Verified village Page name]
+Destination: [Simulated village channels]
 
 [Approved, reviewed post text]
 Affected area · Required action · Issue time
 Authority · Next update · Public notice link
 
-[Copy post]                              primary
-Open village Page                        secondary
+[Copy preview]  [Simulate post]          primary
 
-Publication: Ready — not yet published
+Publication: Ready to simulate
 ```
 
-After manual posting, the administrator enters the post URL and publication time, then selects **Record publication**. Confirmation: “Published — resident reach unknown.” Household contact tasks remain open until their own outcomes are recorded.
+Selecting a channel advances its simulated state and records a local timestamp. Household contact tasks remain open until their own simulated outcomes are recorded.
 
-Offline: “Draft saved — waiting for connectivity,” with a direct route to radio scripts and household contacts. When the notice changes, show “New revision — update this channel” and regenerate from the current approved text before publication. See [the notice-channel plan](outage-notifications.md#4-facebook-workflow).
+The simulation works without connectivity. A later deployment can replace each button with the real channel integration. See [the notice-channel plan](outage-notifications.md#4-facebook-workflow).
