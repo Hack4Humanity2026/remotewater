@@ -131,7 +131,7 @@ async function sendDemoPush(kind) {
       'Tags': boil ? 'warning' : 'white_check_mark',
       'Click': location.origin + location.pathname + '?nointro#home'
     } });
-    if (el) el.textContent = r.ok ? 'Sent to the demo phone.' : 'Send failed (' + r.status + ')';
+    if (el) el.textContent = r.ok ? 'Sent.' : 'Send failed (' + r.status + ')';
   } catch (e) { if (el) el.textContent = 'Send failed: ' + e.message; }
 }
 window.sendDemoPush = sendDemoPush;
@@ -348,7 +348,7 @@ function viewReplay() {
         <div class="steps" role="group" aria-label="Replay steps">${steps.map((s, i) => `<button type="button" data-step="${i}" ${i === state.step ? 'aria-current="step"' : ''} class="${i === state.step ? '' : 'ghost'}">${i + 1}. ${esc(s.title)}</button>`).join('')}</div>
         <h2>${esc(step.title)} <span class="badge">${esc(fmtDate(state.now))}</span></h2>
         <p>${step.body}</p>
-        <div class="row"><button type="button" class="secondary" id="prev" ${state.step === 0 ? 'disabled' : ''}>◀ Back</button><button type="button" id="next" ${state.step === steps.length - 1 ? 'disabled' : ''}>Next ▶</button><button type="button" class="danger" id="push-boil">📣 Send boil notice to demo phone</button><button type="button" class="secondary" id="push-clear">Send all-clear</button><span id="push-status" class="muted small" aria-live="polite"></span></div>
+        <div class="row"><button type="button" class="secondary" id="prev" ${state.step === 0 ? 'disabled' : ''}>◀ Back</button><button type="button" id="next" ${state.step === steps.length - 1 ? 'disabled' : ''}>Next ▶</button>${state.step === 2 ? '<button type="button" class="danger" id="push-boil">📣 Send boil notice</button>' : ''}${state.step === 5 ? '<button type="button" class="secondary" id="push-clear">✓ Send all-clear</button>' : ''}<span id="push-status" class="muted small" aria-live="polite"></span></div>
       </div>
       <div class="card span2">
         <div class="tiles">
@@ -381,8 +381,8 @@ function viewReplay() {
   frag.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => { state.step = +b.dataset.step; render(); }));
   frag.querySelector('#prev').addEventListener('click', () => { state.step--; render(); });
   frag.querySelector('#next').addEventListener('click', () => { state.step++; render(); });
-  frag.querySelector('#push-boil').addEventListener('click', () => sendDemoPush('boil'));
-  frag.querySelector('#push-clear').addEventListener('click', () => sendDemoPush('clear'));
+  frag.querySelector('#push-boil')?.addEventListener('click', () => sendDemoPush('boil'));
+  frag.querySelector('#push-clear')?.addEventListener('click', () => sendDemoPush('clear'));
   return frag;
 }
 
@@ -471,7 +471,7 @@ function viewLab() {
         ${pending.length ? `<label for="lab-sample">Pending sample</label><select id="lab-sample">${pending.map((s) => { const b = batches.find((x) => x.id === s.batchId); return `<option value="${esc(s.id)}" ${s.id === selectedId ? 'selected' : ''}>${esc(s.id)} · ${esc(b?.id || s.batchId)} · ${esc(b?.zone || 'zone unknown')}</option>`; }).join('')}</select>
         <div class="notice-meta"><span>Batch: <b>${esc(batch?.id || '—')}</b></span><span>Zone: <b>${esc(batch?.zone || '—')}</b></span><span>Sent: ${selected ? esc(fmtDate(selected.sentAt)) : '—'}</span></div>
         <div class="form-grid"><div><label for="lab-result">Result</label><select id="lab-result"><option value="pass">Pass — within limits</option><option value="fail">Fail — notify plant</option></select></div><div><label>External report</label><button type="button" id="open-report" class="secondary">Open report (simulated)</button><span id="report-status" class="muted small" role="status">${selected?.externalReportOpenedAt ? `Opened ${esc(fmtDate(selected.externalReportOpenedAt))}` : ''}</span></div></div>
-        <div class="row"><button type="button" id="record-lab">Record result</button><button type="button" class="danger" id="push-boil">📣 Send boil notice to demo phone</button><button type="button" class="secondary" id="push-clear">Send all-clear</button><span id="push-status" class="muted small" aria-live="polite"></span><span id="lab-status" class="muted small" aria-live="polite"></span></div>` : '<p class="empty-state">No pending samples. The plant can register a batch and send a sample here.</p>'}
+        <div class="row"><button type="button" id="record-lab">Record result</button><button type="button" class="danger" id="push-boil">📣 Send boil notice</button><button type="button" class="secondary" id="push-clear">✓ Send all-clear</button><span id="push-status" class="muted small" aria-live="polite"></span><span id="lab-status" class="muted small" aria-live="polite"></span></div>` : '<p class="empty-state">No pending samples. The plant can register a batch and send a sample here.</p>'}
       </div>
       <div class="card span2"><h2>Recent lab results</h2>${samples.length ? `<table><thead><tr><th>Sample</th><th>Batch</th><th>Zone</th><th>Result</th><th>Recorded</th></tr></thead><tbody>${samples.slice().reverse().map((s) => { const b = batches.find((x) => x.id === s.batchId); return `<tr class="${s.result === 'fail' ? 'fail' : ''}"><td>${esc(s.id)}</td><td>${esc(s.batchId)}</td><td>${esc(b?.zone || '—')}</td><td>${s.result ? `<b>${s.result === 'fail' ? 'FAIL' : 'PASS'}</b>` : '<span class="muted">Pending</span>'}</td><td>${s.resultAt ? esc(fmtDate(s.resultAt)) : '—'}</td></tr>`; }).join('')}</tbody></table>` : '<p class="muted">No local lab records yet.</p>'}</div>
       <div class="card span2"><h2>What happens next</h2><p class="muted">A failed result should trigger the plant’s trace and notice workflow. A pass closes this batch’s waiting state; confirm the public notice before residents are told the advisory has ended.</p></div>
