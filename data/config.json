@@ -1,0 +1,44 @@
+{
+  "community": {
+    "name": "Inukjuak",
+    "nameIu": "ᐃᓄᒃᔪᐊᒃ",
+    "region": "Nunavik, Quebec",
+    "lat": 58.455,
+    "lon": -78.103,
+    "timezone": "America/Toronto"
+  },
+  "thresholds": {
+    "freeChlorineMinMgL": 0.3,
+    "freeChlorineMinInTankMgL": 0.2,
+    "turbidityMaxNTU": 1.0,
+    "note": "0.3 mg/L free chlorine at the plant outlet is RQEP (Q-2, r. 40) art. 8. The 0.2 mg/L in-tank figure and the turbidity limit are placeholders to confirm."
+  },
+  "decay": {
+    "kPerDayAt20C": 0.15,
+    "q10": 2.0,
+    "tankTempC": 18,
+    "note": "First-order free-chlorine decay. Placeholder constants; calibrate with strip readings from real tanks."
+  },
+  "trucks": [
+    {
+      "id": "W1",
+      "capacityL": 13600
+    },
+    {
+      "id": "W2",
+      "capacityL": 13600
+    },
+    {
+      "id": "W3",
+      "capacityL": 13600
+    }
+  ],
+  "householdTankL": 1500,
+  "deliveryIntervalDays": 2,
+  "carryoverDeliveries": 3,
+  "labTurnaroundHours": 48,
+  "routineSampleIntervalDays": 7,
+  "trucksNote": "Inukjuak has three water trucks (Nunatsiaq News 2024-05-27). 13,600 L is the Puvirnituq truck size (APTN 2025-11-10); Inukjuak's is not published.",
+  "householdTankNote": "Household tank size is not published. 1,500 L is an assumption.",
+  "deliveryIntervalNote": "Assumption. A 2025 Canadian Press piece says trucks aim for at least one delivery a day per house; two days is used so three trucks can cover the village in the simulation."
+}

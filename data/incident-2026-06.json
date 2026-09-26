@@ -1,0 +1,39 @@
+{
+  "id": "inukjuak-2026-06",
+  "title": "Inukjuak boil-water advisory, June 2026",
+  "summary": "E. coli was detected at the truck loading arm of the Inukjuak water treatment plant through routine monitoring, reported by a private laboratory in Montreal. The Kativik Regional Government issued a community-wide boil-water advisory on 2026-06-06 with no timeline for lifting it.",
+  "facts": [
+    { "text": "Boil-water advisory issued 2026-06-06 by the Kativik Regional Government after E. coli was detected at the loading arm of the water treatment plant.", "source": "Nunatsiaq News, Dominique Gené, 2026-06-11", "url": "https://nunatsiaq.com/stories/article/inukjuak-under-boil-water-advisory-after-e-coli-detected-at-water-plant/" },
+    { "text": "The contamination was identified through routine water-quality monitoring and reported by a private laboratory in Montreal (Alfred Nikiema, KRG Technical Assistance Program).", "source": "Nunatsiaq News, 2026-06-11", "url": "https://nunatsiaq.com/stories/article/inukjuak-under-boil-water-advisory-after-e-coli-detected-at-water-plant/" },
+    { "text": "Residents were told to boil drinking water for at least two minutes. Officials disinfected the system and increased chlorine while investigating. \"There is currently no timeline for lifting the advisory.\"", "source": "Nunatsiaq News, 2026-06-11", "url": "https://nunatsiaq.com/stories/article/inukjuak-under-boil-water-advisory-after-e-coli-detected-at-water-plant/" },
+    { "text": "Inukjuak: population 1,821; 588 private dwellings, 481 occupied by usual residents; 96.4% Inuktitut mother tongue.", "source": "Statistics Canada, 2021 Census Profile", "url": "https://www12.statcan.gc.ca/census-recensement/2021/dp-pd/prof/details/page.cfm?Lang=E&DGUIDlist=2021A00052499085" },
+    { "text": "Inukjuak has three water trucks; in May 2024 one was broken. Schools close when water or sewage service is interrupted for more than two hours.", "source": "Nunatsiaq News, Cedric Gallant, 2024-05-27", "url": "https://nunatsiaq.com/stories/article/nunavik-villages-lack-reliable-access-to-water-causing-health-centre-and-school-closures/" },
+    { "text": "Quebec's drinking water regulation (RQEP, Q-2 r. 40) requires systems serving 1,001 to 8,000 people to take at least 8 E. coli / total coliform samples per month (about 2 per week), a minimum 0.3 mg/L free chlorine residual at the plant outlet, immediate lab reporting of any E. coli detection, and immediate notification of users with a boil-for-1-minute instruction.", "source": "RQEP art. 8, 11, 35, 36", "url": "https://www.legisquebec.gouv.qc.ca/fr/document/rc/Q-2,%20r.%2040" },
+    { "text": "Inukjuak's weekly bacteriological (Colilert) sampling compliance was 86%, 73%, 90%, 88% and 90% for 2021 to 2025. Nunavik average 80% in 2025 against an 85% target.", "source": "KRG Municipal Public Works activity report, Nov 2025 to Feb 2026", "url": "https://www.krg.ca/en-CA/assets/Council/2026/feb/MPW_Activity_Report.pdf" },
+    { "text": "Household water reservoirs are plastic, water stagnates in them for several days, and they are cleaned about every two years. A low-water indicator warns when the tank is nearly empty.", "source": "Institut nordique du Québec / Université Laval, 2024-06-26", "url": "https://inq.ulaval.ca/en/Monitoring-water-reservoirs" },
+    { "text": "In Puvirnituq one driver fills a 13,600-litre truck 9 to 10 times a day.", "source": "APTN Investigates, Pipe Dreams, 2025-11-10", "url": "https://www.aptnnews.ca/investigates/pipe-dreams-the-water-crisis-in-nunavik/" }
+  ],
+  "assumptions": [
+    "The sample collection date and the lab result date were not published. The replay assumes a sample taken 2026-06-02 (RQEP twice-weekly cadence) with the result reported 2026-06-05, the day before the advisory.",
+    "No lifting date was found in public sources. The replay adds a hypothetical clean sample taken 2026-06-09 (result 2026-06-12) to show the all-clear path.",
+    "Household tank size (1,500 L), truck capacity (13,600 L, the Puvirnituq figure) and a two-day delivery cycle are parameters, not Inukjuak facts.",
+    "The lower free-chlorine readings at fill time on the morning of 2026-06-02 are hypothetical, to show what a fill-time chlorine gate would have caught IF low residual was the cause. The actual cause was not published.",
+    "Phone numbers are fictional. Language preference is randomised to match the census share of Inuktitut speakers."
+  ],
+  "timeline": [
+    { "at": "2026-05-30T10:00:00-04:00", "label": "Routine sample at the loading arm passes (assumed date)", "kind": "assumed" },
+    { "at": "2026-06-02T10:00:00-04:00", "label": "Routine sample taken at the loading arm (assumed date)", "kind": "assumed" },
+    { "at": "2026-06-05T16:00:00-04:00", "label": "Private lab in Montreal reports E. coli (assumed date; detection is sourced)", "kind": "assumed" },
+    { "at": "2026-06-06T09:00:00-04:00", "label": "KRG issues a community-wide boil-water advisory", "kind": "fact" },
+    { "at": "2026-06-11T09:00:00-04:00", "label": "Nunatsiaq News: 'no timeline for lifting the advisory'", "kind": "fact" },
+    { "at": "2026-06-12T14:00:00-04:00", "label": "Hypothetical clean result lands; homes clear as post-clean water reaches them", "kind": "hypothetical" }
+  ],
+  "samples": [
+    { "id": "S-0526", "takenAt": "2026-05-26T10:00:00-04:00", "resultAt": "2026-05-29T14:00:00-04:00", "param": "ecoli", "result": "pass", "assumed": true },
+    { "id": "S-0530", "takenAt": "2026-05-30T10:00:00-04:00", "resultAt": "2026-06-02T14:00:00-04:00", "param": "ecoli", "result": "pass", "assumed": true },
+    { "id": "S-0602", "takenAt": "2026-06-02T10:00:00-04:00", "resultAt": "2026-06-05T16:00:00-04:00", "param": "ecoli", "result": "fail", "value": "E. coli detected at loading arm", "assumed": true, "note": "Detection at the loading arm and the 2026-06-06 advisory are sourced. Dates of sampling and result are assumed." },
+    { "id": "S-0609", "takenAt": "2026-06-09T10:00:00-04:00", "resultAt": "2026-06-12T14:00:00-04:00", "param": "ecoli", "result": "pass", "hypothetical": true, "note": "Hypothetical. No lifting date was found in public sources." }
+  ],
+  "hypotheticalChlorineDip": { "from": "2026-06-02T06:00:00-04:00", "to": "2026-06-02T11:00:00-04:00", "level": 0.15 },
+  "sim": { "from": "2026-05-25", "to": "2026-06-14", "seed": 2026 }
+}

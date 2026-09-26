@@ -1,0 +1,10 @@
+{
+  "name": "RemoteWater",
+  "short_name": "RemoteWater",
+  "description": "Which water is in my tank, and is it safe?",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1d2a",
+  "theme_color": "#0b1d2a",
+  "icons": []
+}

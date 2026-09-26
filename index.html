@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RemoteWater — Inukjuak</title>
+  <meta name="description" content="Which water is in my tank, and is it safe? Batch traceability and per-home boil-water alerts for trucked drinking water in Nunavik.">
+  <meta name="theme-color" content="#0b1d2a">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <header class="top">
+    <h1>RemoteWater <small id="subtitle">ᐃᒥᖅ · Inukjuak ᐃᓄᒃᔪᐊᒃ · Nunavik</small></h1>
+    <nav class="tabs" aria-label="Screens" id="tabs"></nav>
+    <div class="langs" id="langs" role="group" aria-label="Language"></div>
+    <div class="clock">
+      <span id="clock-label">Simulated time</span>
+      <input type="datetime-local" id="clock" aria-labelledby="clock-label">
+      <span id="online-wrap"><label style="display:inline;font-weight:500"><input type="checkbox" id="online" checked> Signal</label></span>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <p id="loading">Loading…</p>
+  </main>
+  <footer>
+    Prototype built at Hack for Humanity Ottawa, 2026-09-26. Buildings and roads © OpenStreetMap contributors (ODbL).
+    Delivery records are simulated; phone numbers are fictional. Source list in <a href="./README.md">README</a>.
+  </footer>
+  <script type="module" src="./js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

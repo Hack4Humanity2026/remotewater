@@ -1,0 +1,11 @@
+{
+  "name": "remotewater",
+  "version": "0.1.0",
+  "description": "Batch traceability and targeted boil-water alerts for trucked drinking water in Nunavik",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "python -m http.server 8080 --bind 127.0.0.1",
+    "test": "node --test"
+  }
+}
