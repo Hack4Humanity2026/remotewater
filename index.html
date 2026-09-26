@@ -17,96 +17,157 @@
     .intro::before { content: ''; position: absolute; inset: -20%; pointer-events: none;
       background: radial-gradient(60% 50% at 30% 70%, rgba(27,90,166,.45), transparent 70%), radial-gradient(50% 40% at 75% 25%, rgba(52,160,94,.25), transparent 70%);
       animation: drift 18s ease-in-out infinite alternate; }
-    .intro .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; padding: 8vh 8vw; }
+    .intro .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; padding: 6vh 8vw; }
     .intro .slide.active { display: flex; }
     .intro .l { opacity: 0; transform: translateY(24px); }
-    .intro .slide.active .l { animation: up .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * .45s); }
+    .intro .slide.active .l { animation: up .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * .5s); }
     .intro h1 { font-size: clamp(3rem, 9vw, 7rem); margin: 0; line-height: 1; letter-spacing: -.02em; }
-    .intro h2 { font-size: clamp(1.8rem, 5.2vw, 4rem); margin: 0 0 .25em; line-height: 1.12; font-weight: 800; max-width: 22ch; }
-    .intro p { font-size: clamp(1.15rem, 2.6vw, 2rem); margin: .2em 0; max-width: 34ch; color: #d9e4ee; line-height: 1.3; }
-    .intro .big { font-size: clamp(2.6rem, 8vw, 6rem); font-weight: 900; line-height: 1; color: #fff; margin: .1em 0; }
+    .intro h2 { font-size: clamp(1.7rem, 4.8vw, 3.6rem); margin: 0 0 .3em; line-height: 1.12; font-weight: 800; max-width: 24ch; }
+    .intro p { font-size: clamp(1.15rem, 2.5vw, 1.9rem); margin: .2em 0; max-width: 36ch; color: #d9e4ee; line-height: 1.3; }
+    .intro .big { font-size: clamp(2.4rem, 7vw, 5.4rem); font-weight: 900; line-height: 1.05; color: #fff; margin: .1em 0; }
     .intro .red { color: #ff6b5e; }
     .intro .green { color: #6fe09a; }
     .intro .sub { color: #9fb8cc; font-size: clamp(1rem, 2vw, 1.4rem); }
     .intro .iu { font-size: clamp(1.4rem, 3.4vw, 2.4rem); color: #9fd3ff; }
-    .intro .hint { position: absolute; left: 8vw; bottom: 5vh; color: #9fb8cc; font-size: .95rem; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-    .intro .hint .kbd { border: 1px solid #5a7186; border-radius: 6px; padding: 1px 7px; font-family: ui-monospace, monospace; font-size: .85rem; }
-    .intro .dots { position: absolute; right: 8vw; bottom: 5vh; display: flex; gap: 8px; }
-    .intro .dots i { width: 10px; height: 10px; border-radius: 50%; background: #3d5568; transition: background .3s, transform .3s; }
-    .intro .dots i.on { background: #fff; transform: scale(1.3); }
-    .intro .skip { position: absolute; top: 18px; right: 18px; min-height: 40px; padding: 0 14px; background: transparent; border: 1px solid #5a7186; color: #cfe0ee; font-weight: 500; }
     .intro .cta { display: inline-block; margin-top: 1.2em; padding: 14px 24px; border-radius: 12px; background: #fff; color: #0b1d2a; font-weight: 800; font-size: clamp(1.1rem, 2.4vw, 1.6rem); }
-    /* the little plant -> truck -> home picture on slide 3 */
-    .intro .flow { width: min(90vw, 760px); height: auto; margin-top: 3vh; overflow: visible; }
-    .intro .flow .truck { animation: drive 3.2s ease-in-out infinite; }
-    .intro .flow .drop { animation: fill 3.2s ease-in-out infinite; transform-origin: center; }
+
+    /* Slide 3: the journey of the water, one 9-second loop */
+    .intro .journey { width: min(92vw, 900px); height: auto; margin-top: 2vh; overflow: visible; font-family: inherit; }
+    .journey .truck { animation: j-truck 9s ease-in-out infinite; }
+    .journey .truckwater { transform-origin: 50% 100%; animation: j-truckwater 9s ease-in-out infinite; }
+    .journey .pipe { animation: j-pipe 9s linear infinite; }
+    .journey .hose { animation: j-hose 9s linear infinite; }
+    .journey .tankwater { transform-origin: 50% 100%; animation: j-tankwater 9s ease-in-out infinite; }
+    .journey .cap1 { animation: j-cap1 9s linear infinite; }
+    .journey .cap2 { animation: j-cap2 9s linear infinite; }
+    .journey .cap3 { animation: j-cap3 9s linear infinite; }
+    .journey .q { animation: j-q 9s linear infinite; }
+    @keyframes j-truck { 0%, 30% { transform: translateX(0); } 52%, 100% { transform: translateX(290px); } }
+    @keyframes j-truckwater { 0%, 6% { transform: scaleY(0); } 26%, 60% { transform: scaleY(1); } 78%, 100% { transform: scaleY(.15); } }
+    @keyframes j-pipe { 0%, 5% { opacity: 0; } 8%, 26% { opacity: 1; } 30%, 100% { opacity: 0; } }
+    @keyframes j-hose { 0%, 55% { opacity: 0; } 58%, 80% { opacity: 1; } 84%, 100% { opacity: 0; } }
+    @keyframes j-tankwater { 0%, 58% { transform: scaleY(0); } 78%, 100% { transform: scaleY(1); } }
+    @keyframes j-cap1 { 0%, 3% { opacity: 0; } 8%, 28% { opacity: 1; } 32%, 100% { opacity: 0; } }
+    @keyframes j-cap2 { 0%, 30% { opacity: 0; } 34%, 52% { opacity: 1; } 56%, 100% { opacity: 0; } }
+    @keyframes j-cap3 { 0%, 56% { opacity: 0; } 60%, 84% { opacity: 1; } 88%, 100% { opacity: 0; } }
+    @keyframes j-q { 0%, 84% { opacity: 0; } 88%, 100% { opacity: 1; } }
+
+    /* Slide 4: four steps */
+    .steps4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 2vh; width: min(92vw, 1100px); }
+    .steps4 .step { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18); border-radius: 16px; padding: 18px 16px; min-height: 150px; }
+    .steps4 .n { display: inline-block; width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #0b1d2a; font-weight: 900; text-align: center; line-height: 34px; margin-bottom: 10px; }
+    .steps4 .t { font-size: clamp(1rem, 1.9vw, 1.35rem); line-height: 1.25; color: #fff; font-weight: 700; }
+    .steps4 .s { font-size: clamp(.85rem, 1.4vw, 1rem); color: #9fb8cc; margin-top: 6px; }
+    .steps4 .pill { display: inline-block; margin: 8px 6px 0 0; padding: 4px 10px; border-radius: 999px; font-weight: 800; font-size: .95rem; }
+    .steps4 .ok { background: #1f7a3f; color: #fff; }
+    .steps4 .no { background: #b3261e; color: #fff; }
+    @media (max-width: 720px) { .steps4 { grid-template-columns: 1fr 1fr; } }
+
     @keyframes up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
     @keyframes drift { from { transform: translate(0,0); } to { transform: translate(4%, -3%); } }
-    @keyframes drive { 0% { transform: translateX(0); } 45% { transform: translateX(330px); } 60% { transform: translateX(330px); } 100% { transform: translateX(0); } }
-    @keyframes fill { 0%, 40% { opacity: 0; transform: scale(.6); } 55%, 75% { opacity: 1; transform: scale(1); } 90%, 100% { opacity: 0; } }
     @media (prefers-reduced-motion: reduce) {
-      .intro, .intro::before, .intro .l, .intro .flow .truck, .intro .flow .drop { animation: none !important; transition: none !important; }
+      .intro, .intro::before, .intro .l, .journey * { animation: none !important; transition: none !important; }
       .intro .slide.active .l { opacity: 1; transform: none; }
+      .journey .cap1, .journey .cap2, .journey .cap3, .journey .q, .journey .hose, .journey .pipe { opacity: 1; }
     }
   </style>
 </head>
 <body class="has-intro">
   <a class="sr-only" href="#main">Skip to content</a>
 
-  <!-- ===== Intro slides. Click, tap, Space, Enter or → to advance; ← to go back; Esc or Skip to jump to the app. Add ?nointro to the URL to bypass. ===== -->
+  <!-- ===== Intro slides. Click, tap, Space, Enter or → to advance; ← to go back; Esc jumps to the app. Add ?nointro to the URL to bypass. ===== -->
   <div class="intro" id="intro" role="dialog" aria-label="RemoteWater presentation" aria-live="polite">
-    <button type="button" class="skip" id="intro-skip">Skip to the app</button>
 
-    <section class="slide active" data-slide="0">
+    <section class="slide active">
       <h1 class="l" style="--i:0">RemoteWater</h1>
       <p class="l iu" style="--i:1">ᐃᒥᖅ · Inukjuak ᐃᓄᒃᔪᐊᒃ · Nunavik</p>
       <p class="l" style="--i:2"><b>Is the water in my tank safe?</b></p>
       <p class="l sub" style="--i:3">Hack for Humanity · Ottawa · 2026-09-26 · Josh &amp; Souheil</p>
     </section>
 
-    <section class="slide" data-slide="1">
-      <p class="l sub" style="--i:0">June 2026</p>
-      <h2 class="l" style="--i:1">E. coli at Inukjuak's water plant.</h2>
-      <div class="l big" style="--i:2">1,800 people told to boil.</div>
-      <div class="l big red" style="--i:3">No end date.</div>
-      <p class="l" style="--i:4">Nobody could say which truckload was in which tank.</p>
+    <section class="slide">
+      <p class="l sub" style="--i:0">June 2026, Inukjuak, northern Quebec</p>
+      <h2 class="l" style="--i:1">E. coli was found in the town's drinking water.</h2>
+      <div class="l big" style="--i:2">1,800 people were told to boil their water.</div>
+      <div class="l big red" style="--i:3">Nobody said when it would end.</div>
+      <p class="l" style="--i:4">And nobody could say which homes had the bad water in their tank.</p>
       <p class="l sub" style="--i:5">Nunatsiaq News, 2026-06-11 · Statistics Canada, 2021 Census</p>
     </section>
 
-    <section class="slide" data-slide="2">
-      <h2 class="l" style="--i:0">No pipes. One plant. Three trucks.</h2>
-      <p class="l" style="--i:1">A tank in every home, filled every day or two.</p>
-      <p class="l" style="--i:2">Water is tested at the plant, then never seen again until the tap.</p>
-      <svg class="l flow" style="--i:3" viewBox="0 0 760 150" aria-hidden="true">
-        <rect x="20" y="60" width="90" height="60" rx="6" fill="#1b5aa6" stroke="#9fd3ff" stroke-width="3"/>
-        <rect x="40" y="30" width="16" height="34" fill="#1b5aa6" stroke="#9fd3ff" stroke-width="3"/>
-        <text x="65" y="142" fill="#9fb8cc" font-size="15" text-anchor="middle">plant</text>
-        <line x1="120" y1="122" x2="640" y2="122" stroke="#3d5568" stroke-width="4" stroke-dasharray="14 10"/>
-        <polygon points="650,70 700,35 750,70" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/>
-        <rect x="662" y="70" width="76" height="50" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/>
-        <rect x="690" y="88" width="22" height="32" fill="#0b1d2a"/>
-        <circle class="drop" cx="740" cy="52" r="12" fill="#9fd3ff"/>
-        <text x="700" y="142" fill="#9fb8cc" font-size="15" text-anchor="middle">home tank</text>
-        <g class="truck">
-          <rect x="150" y="76" width="120" height="40" rx="8" fill="#e8f1fa" stroke="#0b1d2a" stroke-width="3"/>
-          <rect x="270" y="88" width="40" height="28" rx="5" fill="#ffbf00" stroke="#0b1d2a" stroke-width="3"/>
-          <circle cx="175" cy="120" r="10" fill="#0b1d2a"/><circle cx="295" cy="120" r="10" fill="#0b1d2a"/>
-          <text x="210" y="102" fill="#0b1d2a" font-size="15" font-weight="700" text-anchor="middle">batch</text>
+    <section class="slide">
+      <h2 class="l" style="--i:0">Inukjuak has no water pipes.</h2>
+      <p class="l" style="--i:1">Water is cleaned at one plant. A truck drives it to a tank inside each home. Once it leaves the plant, nobody checks it again.</p>
+      <svg class="l journey" style="--i:2" viewBox="0 0 900 300" aria-label="Water is cleaned at the plant, driven by truck, and stored in a tank at home">
+        <defs>
+          <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3ff"/><stop offset="1" stop-color="#3b8fe0"/></linearGradient>
+        </defs>
+        <!-- ground -->
+        <rect x="0" y="212" width="900" height="6" fill="#3d5568"/>
+        <!-- plant -->
+        <g>
+          <rect x="30" y="120" width="150" height="92" rx="8" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
+          <rect x="52" y="70" width="22" height="50" fill="#163d66" stroke="#9fd3ff" stroke-width="3"/>
+          <rect x="120" y="140" width="44" height="52" rx="4" fill="#0b1d2a" stroke="#9fd3ff" stroke-width="2"/>
+          <rect x="124" y="146" width="36" height="42" fill="url(#water)"/>
+          <text x="105" y="242" fill="#d9e4ee" font-size="18" font-weight="700" text-anchor="middle">Water plant</text>
+          <text x="105" y="264" fill="#9fb8cc" font-size="14" text-anchor="middle">cleaned and tested here</text>
         </g>
+        <!-- pipe from plant to truck (visible while filling) -->
+        <g class="pipe">
+          <path d="M180 150 H 205 V 168" fill="none" stroke="#9fd3ff" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- truck -->
+        <g class="truck">
+          <rect x="200" y="150" width="150" height="56" rx="10" fill="#e8f1fa" stroke="#0b1d2a" stroke-width="3"/>
+          <rect x="206" y="156" width="138" height="44" rx="8" fill="#0b1d2a" opacity=".15"/>
+          <rect class="truckwater" x="206" y="156" width="138" height="44" rx="8" fill="url(#water)"/>
+          <rect x="350" y="166" width="52" height="40" rx="6" fill="#ffbf00" stroke="#0b1d2a" stroke-width="3"/>
+          <rect x="360" y="172" width="22" height="16" rx="3" fill="#9fd3ff"/>
+          <circle cx="232" cy="210" r="13" fill="#0b1d2a"/><circle cx="232" cy="210" r="5" fill="#9fb8cc"/>
+          <circle cx="378" cy="210" r="13" fill="#0b1d2a"/><circle cx="378" cy="210" r="5" fill="#9fb8cc"/>
+        </g>
+        <!-- hose from truck to house (visible while delivering) -->
+        <g class="hose">
+          <path d="M692 178 C 720 178, 740 180, 762 180" fill="none" stroke="#9fd3ff" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- home -->
+        <g>
+          <polygon points="700,118 780,60 860,118" fill="#2a8f52" stroke="#bff0d1" stroke-width="3"/>
+          <rect x="712" y="118" width="136" height="94" fill="#34a05e" stroke="#bff0d1" stroke-width="3"/>
+          <rect x="726" y="150" width="30" height="62" fill="#0b1d2a"/>
+          <rect x="800" y="132" width="26" height="22" fill="#fff4bf"/>
+          <!-- tank inside the house -->
+          <rect x="762" y="150" width="34" height="56" rx="4" fill="#0b1d2a" stroke="#bff0d1" stroke-width="2"/>
+          <rect class="tankwater" x="766" y="154" width="26" height="48" fill="url(#water)"/>
+          <text x="780" y="242" fill="#d9e4ee" font-size="18" font-weight="700" text-anchor="middle">Home</text>
+          <text x="780" y="264" fill="#9fb8cc" font-size="14" text-anchor="middle">tank inside, refilled every day or two</text>
+        </g>
+        <!-- captions, one per phase -->
+        <g class="cap1"><rect x="300" y="18" width="300" height="46" rx="23" fill="#fff"/><text x="450" y="48" fill="#0b1d2a" font-size="22" font-weight="800" text-anchor="middle">1. Cleaned at the plant</text></g>
+        <g class="cap2"><rect x="300" y="18" width="300" height="46" rx="23" fill="#fff"/><text x="450" y="48" fill="#0b1d2a" font-size="22" font-weight="800" text-anchor="middle">2. Driven to your home</text></g>
+        <g class="cap3"><rect x="300" y="18" width="300" height="46" rx="23" fill="#fff"/><text x="450" y="48" fill="#0b1d2a" font-size="22" font-weight="800" text-anchor="middle">3. Stored in your tank</text></g>
+        <g class="q"><rect x="270" y="18" width="360" height="46" rx="23" fill="#ff6b5e"/><text x="450" y="48" fill="#fff" font-size="22" font-weight="800" text-anchor="middle">Is it still safe? Nobody knows.</text></g>
       </svg>
     </section>
 
-    <section class="slide" data-slide="3">
-      <p class="l sub" style="--i:0">What RemoteWater does</p>
-      <h2 class="l" style="--i:1">Every fill is a batch. Every delivery is logged.</h2>
-      <p class="l" style="--i:2">One failed test tells each home <b>in minutes</b>, in Inuktitut, with <b>no signal</b> and <b>nothing to install</b>.</p>
-      <p class="l" style="--i:3">Home WiFi, the village Facebook group, the radio, and the driver at the door.</p>
-      <div class="l big green" style="--i:4">Is my water safe?</div>
-      <div class="l" style="--i:5"><span class="cta">See it work →</span></div>
+    <section class="slide">
+      <p class="l sub" style="--i:0">How RemoteWater works</p>
+      <h2 class="l" style="--i:1">Four small steps. Nothing new to install.</h2>
+      <div class="steps4">
+        <div class="step l" style="--i:2"><span class="n">1</span><div class="t">The plant writes down today's water reading.</div><div class="s">It already does this every morning. Each truckload gets that day's number.</div></div>
+        <div class="step l" style="--i:3"><span class="n">2</span><div class="t">The driver taps Delivered at each door.</div><div class="s">Works with no signal. Syncs when the truck is back at the plant.</div></div>
+        <div class="step l" style="--i:4"><span class="n">3</span><div class="t">The lab says pass or fail.</div><div class="s">If it fails, we know exactly which homes got that water.</div></div>
+        <div class="step l" style="--i:5"><span class="n">4</span><div class="t">Every home is told, in minutes.</div><div class="s">On the phone, on Facebook, on the radio, or by the driver at the door.</div><span class="pill ok">✓ Safe</span><span class="pill no">⚠ Boil</span></div>
+      </div>
     </section>
 
-    <div class="hint" aria-hidden="true"><span>Click to continue</span><span class="kbd">→</span><span class="kbd">Esc</span><span>skip</span></div>
-    <div class="dots" id="intro-dots" aria-hidden="true"></div>
+    <section class="slide">
+      <h2 class="l" style="--i:0">Every family knows about their own tank.</h2>
+      <p class="l" style="--i:1">In minutes. In Inuktitut. With no cell signal. With nothing installed in the house.</p>
+      <p class="l" style="--i:2">And when clean water arrives, each home is told it is safe again, one by one.</p>
+      <div class="l big green" style="--i:3">Is my water safe?</div>
+      <div class="l" style="--i:4"><span class="cta">See it work →</span></div>
+    </section>
   </div>
 
   <header class="top">
@@ -147,18 +208,14 @@
     (function () {
       const intro = document.getElementById('intro');
       if (!intro) return;
-      if (new URLSearchParams(location.search).has('nointro')) { finish(true); return; }
       const slides = [...intro.querySelectorAll('.slide')];
-      const dots = document.getElementById('intro-dots');
-      dots.innerHTML = slides.map(() => '<i></i>').join('');
       let i = 0, done = false;
       function show(n) {
         i = Math.max(0, Math.min(slides.length - 1, n));
         slides.forEach((s, k) => {
           s.classList.remove('active');
-          if (k === i) { void s.offsetWidth; s.classList.add('active'); } // reflow restarts the line animations
+          if (k === i) { void s.offsetWidth; s.classList.add('active'); } // reflow restarts the animations
         });
-        [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
       }
       function next() { if (i < slides.length - 1) show(i + 1); else finish(false); }
       function finish(instant) {
@@ -168,7 +225,8 @@
         intro.classList.add('leaving');
         setTimeout(() => intro.remove(), 750);
       }
-      intro.addEventListener('click', (e) => { if (e.target.closest('#intro-skip')) finish(false); else next(); });
+      if (new URLSearchParams(location.search).has('nointro')) { finish(true); return; }
+      intro.addEventListener('click', next);
       document.addEventListener('keydown', (e) => {
         if (done) return;
         if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter' || e.key === 'PageDown') { e.preventDefault(); next(); }
