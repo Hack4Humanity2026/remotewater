@@ -79,7 +79,7 @@ Every fact in the app carries a badge: **sourced**, **assumed** or **hypothetica
 python -m http.server 8080
 ```
 
-Then open <http://localhost:8080/#overview>. The public Overview is the default; the June incident replay is under Demo (`#replay`). Any static host works (GitHub Pages, Cloudflare Pages).
+Then open <http://localhost:8080/#overview>. The public Overview starts blank; choose a Demo date/time in the header to load the fictional snapshot. The June incident replay is under Demo (`#replay`). Any static host works (GitHub Pages, Cloudflare Pages).
 Opening `index.html` directly from disk will not work because the page loads JSON with `fetch`.
 
 Tests:
