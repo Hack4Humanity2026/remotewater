@@ -31,11 +31,11 @@ Treat trucked water the way food is treated: every truck fill is a **batch**, ev
 
 ### Why this is different
 
-- **A recall system, not a sensor.** Nothing is installed or maintained at the house. The only
+- **Recall, without sensors.** Nothing is installed or maintained at the house. The only
   devices are phones the drivers and residents already have.
 - **The truck is the network.** Deliveries are logged offline on the driver's phone and synced
   when the truck returns to the plant, which it does many times a day.
-- **SMS, not an app.** Alerts go out as text messages in each home's language. No data plan, no
+- **SMS first.** Alerts go out as text messages in each home's language. No data plan, no
   smartphone, no Facebook needed. The web app is a bonus for those who want detail.
 - **Homes clear individually.** Once a clean sample closes the window, each home turns green the
   moment post-clean water reaches its tank, instead of waiting for a community-wide lifting date.

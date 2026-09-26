@@ -63,10 +63,18 @@ function notificationsUpTo(now) {
     const r = recall({ ...d, samples: known.filter((s) => ms(s.resultAt) <= ms(f.resultAt)), deliveries: d.deliveries.filter((x) => ms(x.at) <= ms(f.resultAt)) }, f.id, { now: f.resultAt, carryover: d.config.carryoverDeliveries });
     for (const hh of r.houses) out.push({ at, house: hh, kind: 'boil', date: r.lastDelivery[hh.id]?.at });
     for (const hh of r.notAffected) out.push({ at, house: hh, kind: 'notAffected' });
+    // Homes that receive affected water AFTER the alert (the window is still open) are told at delivery time.
+    const rNow = recall({ ...d, samples: known, deliveries: d.deliveries.filter((x) => ms(x.at) <= ms(now)) }, f.id, { now, carryover: d.config.carryoverDeliveries });
+    const already = new Set(r.houses.map((x) => x.id));
+    for (const hh of rNow.houses) {
+      if (already.has(hh.id)) continue;
+      const first = rNow.deliveries.filter((x) => x.houseId === hh.id).sort((a, b) => ms(a.at) - ms(b.at))[0];
+      if (first) out.push({ at: new Date(ms(first.at) + 5 * 60e3).toISOString(), house: hh, kind: 'boil', date: first.at });
+    }
     const nextPass = d.samples.find((s) => s.result === 'pass' && ms(s.takenAt) > ms(f.takenAt) && s.resultAt && ms(s.resultAt) <= ms(now));
     if (nextPass) {
       const st = allStatuses(d, now, { carryover: d.config.carryoverDeliveries }).byHouse;
-      for (const hh of r.houses) {
+      for (const hh of rNow.houses) {
         const s = st[hh.id];
         if (s && s.reason === 'cleared') out.push({ at: new Date(Math.max(ms(s.clearedAt), ms(nextPass.resultAt)) + 5 * 60e3).toISOString(), house: hh, kind: 'clear', date: s.clearedAt });
       }
@@ -121,8 +129,8 @@ function replaySteps() {
     { at: '2026-06-05T16:05:00-04:00', title: 'Lab result: FAIL', body: `The Montreal lab reports E. coli at the loading arm. RemoteWater immediately traces every load filled since the last clean sample and every home those loads reached. The window stays open until a clean sample exists, so new deliveries are also flagged.` },
     { at: '2026-06-05T16:10:00-04:00', title: 'SMS in minutes', body: `Each affected home gets a boil-water text in its own language, naming the date of the delivery in its tank. Homes that did not receive affected water are told so. No radio, no Facebook, no data plan needed.` },
     { at: '2026-06-09T12:00:00-04:00', title: 'Advisory continues', body: `Deliveries must continue; people need water. Every home stays red because the window is open. The plant disinfects, raises chlorine, and takes a new sample on June 9 (hypothetical).` },
-    { at: '2026-06-12T14:05:00-04:00', title: 'Clean result lands', body: `The clean result closes the window at June 9. Every home whose tank already holds water from a load filled after June 9 clears immediately and gets an all-clear text. The rest clear at their next delivery. Compare: in reality there was "no timeline for lifting the advisory".` },
-    { at: '2026-06-14T18:00:00-04:00', title: 'Two days later', body: `Homes clear one by one as trucks bring post-clean water. Each family knows the status of its own tank, not just the town's.` }
+    { at: '2026-06-12T14:05:00-04:00', title: 'Clean result lands', body: `The clean result closes the window at June 9. Trucks never stopped, so by the time the result lands most tanks already hold water from loads filled after June 9. Those homes clear the same minute and get an all-clear text; the rest clear at their next delivery. Compare: in reality there was "no timeline for lifting the advisory".` },
+    { at: '2026-06-14T18:00:00-04:00', title: 'Two days later', body: `Every home is clear, and the record shows exactly which delivery cleared it. Each family knew the status of its own tank, not just the town's. The same log is the starting point for the investigation into the cause.` }
   ];
 }
 
