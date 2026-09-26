@@ -4,9 +4,9 @@ Start with the public overview in [screen flows](screen-flows.md). Review time: 
 
 **Decision:** make the default page a water-quality map by delivery zone. Put data entry in a separate, role-specific work area. A resident should not have to understand the water system to find a zone's recorded results.
 
-The first implementation slice now covers the public Overview, local Plant/Lab batch workflow, and notice-channel workspace. The remaining production items in this document are still planning work. Reviewed 2026-09-26 against the [live site](https://hack4humanity2026.github.io/remotewater/).
+The hackathon implementation uses one local demo with a Persona dropdown: no authentication, no real communications, and no shared backend. The first implementation slice covers the public Overview, Plant/Lab batch workflow, simulated Truck assignment/delivery, Resident view, and simulated notice channels. The remaining production items in this document are follow-up work. Reviewed 2026-09-26 against the [live site](https://hack4humanity2026.github.io/remotewater/).
 
-**Notice-channel accommodations:** see [Facebook, radio and outage fallback](outage-notifications.md). Add manual Facebook post preparation/publication tracking, local radio scripts and tracked household contact to the advisory workflow. Use the town/village's designated Page based on user-reported evidence of existing use; verify its URL and publisher before setup. Offline caching, social posts and queued SMS do not deliver new warnings through a failed network. The addendum includes dependencies, screens, validation and additional software estimates.
+**Notice-channel accommodations:** see [Facebook, radio and outage fallback](outage-notifications.md). The hackathon uses simulated Facebook, radio, SMS and household actions so the complete workflow can be judged without accounts or connectivity. Real integrations can replace these buttons later.
 
 ## 1. What the review found
 
@@ -16,7 +16,7 @@ Read `README.md`, both existing docs, the app shell, all functional modules, con
 |---|---|---|
 | Default route is Replay: seven step buttons, narrative, six counters, simulated clock and Signal checkbox. | The first screen asks visitors to learn the demo before finding water information. | Default to Overview; keep replay under About → Demo, with its own clock and dataset. |
 | Plant now shows sample tables, trace, notifications, loads and a local registration form; Lab has a result-entry route. | The demo can complete one batch → sample → result loop, but records remain device-local. | Add shared repository/API, assignments and durable evidence before operational use. |
-| Truck creates a load, chooses a truck, and gets a house list. No assignment or zone model. | Drivers must organize work themselves; no batch-to-zone overview exists. | Plant assigns truck + batch + zone; driver opens their next assignment. |
+| Truck now opens the latest local plant assignment when one exists, then queues simulated deliveries. | The demo can show Plant → Truck → Resident without a backend. | Replace the local assignment with shared records and verified zones later. |
 | Home selects one building from a long list; strip “Check” changes text only. | Home is not a public overview; strip uploads and durable readings do not exist. | Preserve dwelling detail as a drill-down; add strip evidence to truck delivery records. |
 | `store.js` generates deliveries; Sync merges the local queue into memory and clears it. | This is a demo, not shared storage. Refresh loses applied changes; another role/device cannot see them. | Separate fixtures from operational data; durable local drafts plus acknowledged server synchronization. |
 
@@ -28,7 +28,7 @@ Read `README.md`, both existing docs, the app shell, all functional modules, con
 
 ### Shared public Overview
 
-Available without sign-in and accessible from every work screen. Header: RemoteWater, Overview, Work, language. Production Work opens the user's permitted role; a labeled role switcher is acceptable only in the demo.
+Available without sign-in and accessible from every work screen. Header: RemoteWater, Overview, Demo and a Persona dropdown. The dropdown is intentionally a demo control; it is not access control.
 
 1. Show an active official advisory first, when one exists, with source and update time.
 2. Show “Water quality by zone,” a zone search, last successful update, and the map. No KPI row.
@@ -38,15 +38,15 @@ Available without sign-in and accessible from every work screen. Header: RemoteW
 
 On mobile: search, map/list switch, selected-zone detail in document flow. Avoid a map overlay that covers the selection. No login wall, forced tutorial, auto-playing replay, or modal on arrival.
 
-### Role workspaces
+### Persona workspaces
 
-| Role | Landing screen | Primary action | Completion proof |
+| Persona | Landing screen | Primary action | Completion proof |
 |---|---|---|---|
 | Treatment plant | Batches needing a next step; newest unfinished batch first | Register batch | Batch ID saved; next action is Prepare sample |
 | Water lab | Samples awaiting results; overdue/flagged first | Enter results | Published result revision linked to sample and batch |
 | Truck | Current assignment: batch, destination zone, task state | Record delivery | Delivery saved, strip evidence state visible, next assignment shown |
 
-Plant also assigns batches to trucks and zones. This is a planning assumption because no dispatcher persona was specified. Truck users cannot change lab results or silently substitute batches. Lab users cannot assign deliveries. UI hiding is not access control: enforce roles on writes at the server.
+Plant also assigns batches to trucks and zones. In the hackathon demo, the Persona dropdown makes each role selectable and localStorage carries records between screens. There is no authentication or permission boundary; server-side role enforcement belongs to the later backend.
 
 ### Low cognitive load rules
 
@@ -136,7 +136,7 @@ Time is stored as ISO timestamps and rendered in community time. Distinguish col
 
 MVP includes the public map/list, all three role workflows, assignment, explicit statuses, photo capture/upload, durable records and traceable evidence. A local demo may demonstrate these with fixtures but must state that data is not shared.
 
-The notice accommodation adds a shared, versioned notice with manual Facebook publishing, radio scripts and household-contact tracking. Channel publication is separate from confirmed resident contact. See the addendum for incremental estimates beyond the base build sequence.
+The hackathon notice accommodation uses one versioned simulated notice with Facebook, radio, SMS and household-contact actions. Buttons advance simulated channel states; nothing is posted, broadcast, sent, or delivered. A real channel integration can replace these actions later.
 
 Defer OCR/AI strip reading, route optimization, predictive “safe until,” live truck tracking and automated channel publishing (SMS/Facebook). Retain the June replay as optional demo material. No frontend framework migration is needed for this scope.
 

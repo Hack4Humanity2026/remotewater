@@ -1,6 +1,6 @@
 // app.js — screens. Hash router, no framework.
 //   #overview public zone quality overview (default)
-//   #notice  authorized notice channels (Facebook, radio, SMS, household contact)
+//   #notice  simulated notice channels (Facebook, radio, SMS, household contact)
 //   #replay  the June 2026 incident, step by step (the demo)
 //   #plant   operator: samples, loads, trace, notifications
 //   #lab     water lab: receive and record sample results
@@ -17,6 +17,7 @@ const state = {
   data: null,
   now: '2026-06-05T16:05:00-04:00',
   view: 'overview',
+  persona: 'overview',
   houseId: null,
   selectedZone: null,
   ops: null,
@@ -48,6 +49,7 @@ const ms = (iso) => new Date(iso).getTime();
   state.ops = readOps(state.data);
   state.houseId = state.data.houses.find((x) => x.kind === 'clinic')?.id || state.data.houses[0].id;
   $('#clock').addEventListener('change', (e) => { if (e.target.value) { state.now = new Date(e.target.value).toISOString(); render(); } });
+  $('#persona').addEventListener('change', (e) => { location.hash = '#' + e.target.value; });
   window.addEventListener('hashchange', route);
   route();
 })();
@@ -55,6 +57,7 @@ const ms = (iso) => new Date(iso).getTime();
 function route() {
   const [view, arg] = (location.hash.replace('#', '') || 'overview').split('/');
   state.view = ['overview', 'notice', 'replay', 'plant', 'lab', 'truck', 'home'].includes(view) ? view : 'overview';
+  state.persona = state.view;
   if (view === 'home' && arg && houseById(state.data, arg)) state.houseId = arg;
   if (view === 'overview' && arg) state.selectedZone = arg;
   render();
@@ -109,8 +112,9 @@ function render() {
   document.documentElement.lang = getLang();
   $('#clock').value = toLocalInput(state.now);
   $('#clock').closest('.clock').hidden = state.view === 'overview' || state.view === 'notice';
-  $('#tabs').innerHTML = [['overview', 'tabOverview'], ['plant', 'tabPlant'], ['lab', 'tabLab'], ['truck', 'tabTruck'], ['home', 'tabHome'], ['replay', 'tabReplay']]
+  $('#tabs').innerHTML = [['overview', 'tabOverview'], ['replay', 'tabReplay']]
     .map(([v, k]) => `<a href="#${v}" ${state.view === v ? 'aria-current="page"' : ''}>${esc(t(k))}</a>`).join('');
+  $('#persona').value = state.persona === 'notice' ? 'notice' : state.persona;
   $('#langs').innerHTML = Object.entries(LANGS).map(([k, v]) => `<button type="button" data-lang="${k}" aria-pressed="${getLang() === k}">${v}</button>`).join('');
   $('#langs').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setLang(b.dataset.lang); localStorage.setItem('rw.lang', b.dataset.lang); render(); }));
   const main = $('#main');
@@ -143,8 +147,6 @@ function readNotice(data) {
     authority: 'Water treatment plant',
     issuedAt: '2026-06-05T16:05:00-04:00',
     instruction: 'Boil water for 1 minute before drinking, cooking, brushing teeth or making baby formula.',
-    facebookPageUrl: data?.config?.community?.facebookPageUrl || '',
-    facebookPostUrl: '',
     channels: {
       facebook: { state: 'ready', publishedAt: '' },
       radio: { state: 'ready', airedAt: '' },
@@ -216,7 +218,7 @@ function viewOverview() {
     <div class="grid overview">
       ${notice.active ? `<div class="card span2 advisory" role="status" aria-live="polite">
         <div><span class="badge assumed">${notice.demo ? 'Demo notice' : 'Official notice'} · revision ${esc(notice.revision)}</span><h2>${esc(notice.scope)}</h2>
-        <p><b>${esc(notice.instruction)}</b></p><p class="muted small">Issued ${esc(fmtDate(notice.issuedAt))} by ${esc(notice.authority)}. Latest information may also be shared through local Facebook, radio, SMS and household contact.${/^https:\/\/(www\.)?facebook\.com\//i.test(notice.facebookPageUrl || '') ? ` <a href="${esc(notice.facebookPageUrl)}" target="_blank" rel="noopener">Village notices on Facebook</a>` : ''}</p></div>
+        <p><b>${esc(notice.instruction)}</b></p><p class="muted small">Issued ${esc(fmtDate(notice.issuedAt))} by ${esc(notice.authority)}. This hackathon demo simulates local Facebook, radio, SMS and household contact.</p></div>
         <a class="button-link secondary" href="#notice">Share / update notice</a>
       </div>` : ''}
       <div class="card span2 overview-intro"><h2>Water quality by zone</h2><p class="muted">Select a zone to see delivered batches and recorded test evidence.</p><div class="row"><span class="muted small">Demo snapshot ${esc(fmtDate(state.now))}</span><a class="button-link ghost" href="#replay">Open demo</a></div></div>
@@ -232,7 +234,7 @@ function viewOverview() {
 }
 
 function noticeChannelState(channel) {
-  const names = { ready: 'Ready', published: 'Published · resident reach unknown', aired: 'Broadcast aired', accepted: 'Accepted by sender', open: 'Open route' };
+  const names = { ready: 'Ready to simulate', published: 'Simulated post published', aired: 'Simulated broadcast aired', accepted: 'Simulated SMS accepted', open: 'Open route' };
   return names[channel?.state] || 'Needs action';
 }
 
@@ -250,39 +252,22 @@ function viewNotice() {
   const n = state.notice;
   const hCount = n.channels.households;
   const postText = noticePostText();
-  const pageUrl = n.facebookPageUrl || '';
-  const pageOkay = /^https:\/\/(www\.)?facebook\.com\//i.test(pageUrl);
   const frag = h(`
     <div class="grid notice-center">
-      <div class="card span2"><span class="badge assumed">Authorized workspace</span><h2>Share notice ${esc(n.id)} · revision ${esc(n.revision)}</h2><p class="muted">Prepare one approved message, then track each channel separately. Publishing does not prove a resident received or understood it.</p><div class="notice-meta"><b>${esc(n.scope)}</b><span>Issued ${esc(fmtDate(n.issuedAt))}</span><span>Authority: ${esc(n.authority)}</span></div></div>
-      <div class="card"><h2>Facebook Page</h2><p class="muted small">Use the designated village Page. A Page administrator publishes manually.</p><label for="facebook-page">Verified Page URL</label><input id="facebook-page" type="url" value="${esc(pageUrl)}" placeholder="https://www.facebook.com/…"><div class="row"><button type="button" id="save-page" class="secondary">Save Page</button><a id="open-page" class="button-link ghost" href="${esc(pageUrl)}" target="_blank" rel="noopener" ${pageOkay ? '' : 'hidden'}>Open Page</a></div><label for="facebook-post">Approved post text</label><textarea id="facebook-post" rows="7" readonly>${esc(postText)}</textarea><div class="row"><button type="button" id="copy-post">Copy post</button><span id="copy-status" class="muted small" aria-live="polite"></span></div><label for="facebook-post-url">Published post URL</label><input id="facebook-post-url" type="url" value="${esc(n.facebookPostUrl || '')}" placeholder="Paste the published post link"><div class="row"><button type="button" id="record-facebook" class="secondary">Record publication</button><span id="facebook-status" class="muted small" aria-live="polite"></span></div><p class="small"><span class="badge ${n.channels.facebook.state === 'published' ? 'fact' : 'assumed'}">${esc(noticeChannelState(n.channels.facebook))}</span>${n.channels.facebook.publishedAt ? ` ${esc(fmtDate(n.channels.facebook.publishedAt))}` : ''}</p></div>
-      <div class="card"><h2>Radio and SMS</h2><p class="muted small">Use the same approved text in reviewed local languages.</p><div class="channel-row"><span><b>Local radio</b><small>${esc(noticeChannelState(n.channels.radio))}</small></span><button type="button" id="mark-radio" class="secondary">${n.channels.radio.state === 'aired' ? 'Update broadcast' : 'Mark broadcast aired'}</button></div><div class="channel-row"><span><b>SMS</b><small>${esc(noticeChannelState(n.channels.sms))}</small></span><button type="button" id="mark-sms" class="secondary">${n.channels.sms.state === 'accepted' ? 'Record another send' : 'Mark SMS accepted'}</button></div><p class="muted small">A queued or accepted SMS is separate from a delivered message.</p></div>
-      <div class="card span2"><h2>Household contact route</h2><p>Radio/Facebook publication does not close this route. Track direct contact for households that need it.</p><div class="tiles"><div class="tile"><b>${hCount.total}</b>households in route</div><div class="tile green"><b>${hCount.informed}</b>resident informed</div><div class="tile amber"><b>${hCount.attempted - hCount.informed}</b>follow-up needed</div></div><div class="row"><button type="button" id="mark-house">Mark one resident informed</button><button type="button" id="mark-attempt" class="secondary">Record attempt</button><span class="muted small" aria-live="polite">${hCount.informed} of ${hCount.total} informed · ${hCount.attempted} attempts</span></div></div>
-      <div class="card span2"><h2>Offline status</h2><p class="muted">Save this notice and its channel records on the device. When connectivity returns, check the revision before publishing a saved Facebook draft. Never mark a notice published because Copy post was clicked.</p><p class="offline-note">${navigator.onLine ? 'Connected to the app.' : 'Offline — last saved notice remains visible; new notices may not be shown.'}</p></div>
+      <div class="card span2"><span class="badge assumed">Demo workspace</span><h2>Simulate notice ${esc(n.id)} · revision ${esc(n.revision)}</h2><p class="muted">Choose a channel to show what a community notification would look like. Nothing is sent, posted, or delivered outside this demo.</p><div class="notice-meta"><b>${esc(n.scope)}</b><span>Issued ${esc(fmtDate(n.issuedAt))}</span><span>Authority: ${esc(n.authority)}</span></div></div>
+      <div class="card"><h2>Facebook</h2><p class="muted small">This simulates posting to the village Facebook Page.</p><label for="facebook-post">Post preview</label><textarea id="facebook-post" rows="7" readonly>${esc(postText)}</textarea><div class="row"><button type="button" id="copy-post" class="secondary">Copy preview</button><button type="button" id="simulate-facebook">${n.channels.facebook.state === 'published' ? 'Simulate again' : 'Simulate post'}</button><span id="copy-status" class="muted small" aria-live="polite"></span></div><p class="small"><span class="badge ${n.channels.facebook.state === 'published' ? 'fact' : 'assumed'}">${esc(noticeChannelState(n.channels.facebook))}</span>${n.channels.facebook.publishedAt ? ` ${esc(fmtDate(n.channels.facebook.publishedAt))}` : ''}</p></div>
+      <div class="card"><h2>Radio and SMS</h2><p class="muted small">Both channels are simulated; no carrier, radio station, or device is contacted.</p><div class="channel-row"><span><b>Local radio</b><small>${esc(noticeChannelState(n.channels.radio))}</small></span><button type="button" id="mark-radio" class="secondary">${n.channels.radio.state === 'aired' ? 'Simulate again' : 'Simulate broadcast'}</button></div><div class="channel-row"><span><b>SMS</b><small>${esc(noticeChannelState(n.channels.sms))}</small></span><button type="button" id="mark-sms" class="secondary">${n.channels.sms.state === 'accepted' ? 'Simulate again' : 'Simulate SMS send'}</button></div></div>
+      <div class="card span2"><h2>Household contact route</h2><p>Use this for a simulated door-to-door or community liaison follow-up when other channels may not reach everyone.</p><div class="tiles"><div class="tile"><b>${hCount.total}</b>households in route</div><div class="tile green"><b>${hCount.informed}</b>resident informed</div><div class="tile amber"><b>${hCount.attempted - hCount.informed}</b>follow-up needed</div></div><div class="row"><button type="button" id="mark-house">Simulate resident informed</button><button type="button" id="mark-attempt" class="secondary">Simulate attempt</button><span class="muted small" aria-live="polite">${hCount.informed} of ${hCount.total} informed · ${hCount.attempted} attempts</span></div></div>
+      <div class="card span2"><h2>Demo state</h2><p class="muted">Channel actions are saved in this browser so the workflow can be replayed without a backend or network.</p><p class="offline-note">Simulation mode — no real communication will be sent.</p><button type="button" id="reset-demo" class="ghost">Reset demo records</button></div>
     </div>`);
-  const facebookPageInput = frag.querySelector('#facebook-page');
-  const openPage = frag.querySelector('#open-page');
-  const facebookStatus = frag.querySelector('#facebook-status');
   const copyStatus = frag.querySelector('#copy-status');
-  const publishedPostInput = frag.querySelector('#facebook-post-url');
-  frag.querySelector('#save-page').addEventListener('click', () => {
-    state.notice.facebookPageUrl = facebookPageInput.value.trim();
-    saveNotice();
-    const valid = /^https:\/\/(www\.)?facebook\.com\//i.test(state.notice.facebookPageUrl);
-    openPage.hidden = !valid;
-    if (valid) openPage.href = state.notice.facebookPageUrl;
-    facebookStatus.textContent = valid ? 'Page URL saved.' : 'Save a verified https://www.facebook.com/… URL.';
-  });
-  frag.querySelector('#copy-post').addEventListener('click', () => copyText(postText).then(() => { copyStatus.textContent = 'Copied. Publication still needs to be recorded.'; }).catch(() => { copyStatus.textContent = 'Copy failed. Select the text and copy it manually.'; }));
-  frag.querySelector('#record-facebook').addEventListener('click', () => {
-    const url = publishedPostInput.value.trim();
-    if (!/^https:\/\/(www\.)?facebook\.com\//i.test(url)) { facebookStatus.textContent = 'Paste a Facebook post URL before recording publication.'; return; }
-    state.notice.facebookPostUrl = url; state.notice.channels.facebook = { state: 'published', publishedAt: new Date().toISOString() }; saveNotice(); render();
-  });
+  frag.querySelector('#copy-post').addEventListener('click', () => copyText(postText).then(() => { copyStatus.textContent = 'Copied. Use Simulate post to advance the demo.'; }).catch(() => { copyStatus.textContent = 'Copy failed. Select the text and copy it manually.'; }));
+  frag.querySelector('#simulate-facebook').addEventListener('click', () => { state.notice.channels.facebook = { state: 'published', publishedAt: new Date().toISOString() }; saveNotice(); render(); });
   frag.querySelector('#mark-radio').addEventListener('click', () => { state.notice.channels.radio = { state: 'aired', airedAt: new Date().toISOString() }; saveNotice(); render(); });
   frag.querySelector('#mark-sms').addEventListener('click', () => { state.notice.channels.sms = { state: 'accepted', acceptedAt: new Date().toISOString() }; saveNotice(); render(); });
   frag.querySelector('#mark-house').addEventListener('click', () => { hCount.attempted = Math.min(hCount.total, hCount.attempted + 1); hCount.informed = Math.min(hCount.total, hCount.informed + 1); hCount.state = hCount.informed >= hCount.total ? 'complete' : 'open'; saveNotice(); render(); });
   frag.querySelector('#mark-attempt').addEventListener('click', () => { hCount.attempted = Math.min(hCount.total, hCount.attempted + 1); saveNotice(); render(); });
+  frag.querySelector('#reset-demo').addEventListener('click', () => { localStorage.removeItem(NOTICE_KEY); localStorage.removeItem(OPS_KEY); driverQueue.clear(); state.notice = readNotice(state.data); state.ops = readOps(state.data); state.currentLoadId = null; render(); });
   return frag;
 }
 
@@ -374,7 +359,7 @@ function viewPlant() {
   const zones = zoneSummaries().map((z) => z.name);
   const frag = h(`
     <div class="grid">
-      <div class="card span2 action-banner"><div><span class="badge assumed">Notice channels</span><h2>Share an approved notice</h2><p class="muted small">Prepare Facebook, radio, SMS and household contact actions from one revisioned notice.</p></div><a class="button-link" href="#notice">Open notice center</a></div>
+      <div class="card span2 action-banner"><div><span class="badge assumed">Simulated channels</span><h2>Simulate an approved notice</h2><p class="muted small">Preview Facebook, radio, SMS and household contact actions from one revisioned notice.</p></div><a class="button-link" href="#notice">Open communications</a></div>
       <div class="card span2"><span class="badge fact">Plant operator</span><h2>Register a water batch</h2><p class="muted small">Record the fill once, check the gate, then send one sample to the lab. The truck can work offline after this step.</p>
         <div class="form-grid">
           <div><label for="batch-truck">Truck</label><select id="batch-truck">${d.config.trucks.map((tr) => `<option value="${esc(tr.id)}">${esc(tr.id)}</option>`).join('')}</select></div>
@@ -473,14 +458,16 @@ function viewTruck() {
   const d = state.data;
   const queue = driverQueue.list();
   const online = $('#online').checked;
+  const assignedBatch = (state.ops?.batches || []).slice().reverse().find((b) => b.truckId === state.truckId);
   const myLoads = [...d.loads, ...queue.filter((q) => q.type === 'load').map((q) => q.load)].filter((l) => l.truckId === state.truckId && ms(l.filledAt) <= ms(state.now));
-  const cur = myLoads.find((l) => l.id === state.currentLoadId) || null;
+  const cur = myLoads.find((l) => l.id === state.currentLoadId || l.id === assignedBatch?.loadId) || null;
   const routeIds = d.routes[state.truckId] || [];
   const delivered = new Set([...d.deliveries, ...queue.filter((q) => q.type === 'delivery').map((q) => q.delivery)].filter((x) => x.loadId === cur?.id).map((x) => x.houseId));
   const next = routeIds.map((id) => houseById(d, id)).filter(Boolean).filter((x) => !delivered.has(x.id)).slice(0, 10);
   const min = d.config.thresholds.freeChlorineMinMgL;
   const frag = h(`
     <div class="grid">
+      ${assignedBatch ? `<div class="card span2 assignment-card"><div><span class="badge fact">Simulated assignment</span><h2>${esc(assignedBatch.id)} → ${esc(assignedBatch.zone)} zone</h2><p class="muted small">Truck ${esc(assignedBatch.truckId)} · ${esc(assignedBatch.volumeL)} L · Plant result: ${assignedBatch.status === 'flagged' ? 'flagged — hold' : assignedBatch.status === 'cleared' ? 'pass recorded' : 'lab pending'}</p></div>${assignedBatch.status === 'flagged' ? '<span class="badge assumed">Hold — failed result</span>' : cur ? '<span class="badge fact">Assignment started</span>' : '<button type="button" id="start-assignment">Start assignment</button>'}</div>` : '<div class="card span2 assignment-card"><span class="badge assumed">No plant assignment yet</span><h2>Start with the Plant persona</h2><p class="muted small">Register a batch, choose this truck, then return here to simulate the delivery route.</p></div>'}
       <div class="card"><h2>${label('newLoad')}</h2>
         <label for="truck">${label('fromTruck')}</label><select id="truck">${d.config.trucks.map((tr) => `<option ${tr.id === state.truckId ? 'selected' : ''}>${tr.id}</option>`).join('')}</select>
         <label for="cl">${label('freeCl')}</label><input id="cl" type="number" step="0.05" min="0" max="5" value="0.8" inputmode="decimal">
@@ -497,10 +484,15 @@ function viewTruck() {
       <div class="card span2"><h2>${online ? label('synced') : label('offlineQueue')}</h2>
         <p><b>${queue.length}</b> events on this phone ${online ? '' : '(no signal; they will sync at the plant)'}</p>
         <div class="row"><button type="button" id="sync" ${queue.length && online ? '' : 'disabled'}>Sync at plant</button><button type="button" class="ghost" id="clearq" ${queue.length ? '' : 'disabled'}>Discard queue</button></div>
-        <p class="muted small">Uncheck “Signal” in the header to work offline. Everything keeps working; only the sync waits.</p>
+        <p class="muted small">Uncheck “Demo signal” in the header to replay an outage. Everything keeps working; only the simulated sync waits.</p>
       </div>
     </div>`);
   frag.querySelector('#truck').addEventListener('change', (e) => { state.truckId = e.target.value; state.currentLoadId = null; render(); });
+  frag.querySelector('#start-assignment')?.addEventListener('click', () => {
+    if (!assignedBatch || assignedBatch.status === 'flagged') return;
+    const load = { id: assignedBatch.loadId || newRecordId('L'), truckId: assignedBatch.truckId, filledAt: assignedBatch.registeredAt || state.now, freeCl: assignedBatch.freeCl, turbidity: assignedBatch.turbidity, emptiedBefore: false, batchId: assignedBatch.id };
+    assignedBatch.loadId = load.id; assignedBatch.assignmentStartedAt = state.now; saveOps(); driverQueue.push({ type: 'load', load }); state.currentLoadId = load.id; render();
+  });
   const clInput = frag.querySelector('#cl'), gate = frag.querySelector('#gate');
   const checkGate = () => { const v = +clInput.value; gate.textContent = v < min ? `⚠ ${v} mg/L is below the ${min} mg/L minimum at the plant outlet (RQEP art. 8). Do not leave the plant. Call the operator.` : `Free chlorine ${v} mg/L: OK to deliver.`; gate.style.color = v < min ? 'var(--red)' : 'var(--green)'; };
   clInput.addEventListener('input', checkGate); checkGate();
@@ -537,6 +529,7 @@ function viewHome() {
   const notes = notificationsUpTo(state.now).filter((n) => n.house.id === house.id).reverse();
   const frag = h(`
     <div class="grid">
+      <div class="card span2 advisory" role="status" aria-live="polite"><div><span class="badge assumed">Simulated community notice</span><h2>${esc(state.notice.scope)}</h2><p><b>${esc(state.notice.instruction)}</b></p><p class="muted small">This resident view is part of the demo. Communications are simulated.</p></div><a class="button-link secondary" href="#notice">View channels</a></div>
       <div class="card span2">
         <label for="house">${esc(house.name || house.id)}</label>
         <select id="house">${d.houses.map((x) => `<option value="${x.id}" ${x.id === house.id ? 'selected' : ''}>${esc(x.name ? `${x.name} (${x.id})` : x.id)}</option>`).join('')}</select>
